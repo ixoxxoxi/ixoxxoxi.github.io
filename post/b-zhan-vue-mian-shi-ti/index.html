@@ -1,0 +1,343 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>B站vue面试题 | Learning Notes</title>
+
+<link rel="shortcut icon" href="https://ixoxxoxi.github.io/favicon.ico?v=1675607442775">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://ixoxxoxi.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Learning Notes
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1675607442775"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    B站vue面试题
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-02-05 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="1vue3响应式为什么使用proxy替代objectdefineproperty">1.vue3响应式为什么使用Proxy替代Object.defineProperty()</h3>
+<!-- more -->
+<pre><code class="language-js">new Proxy(obj,{
+    get(target,key,receiver){
+        // 收集副作用函数
+        const res=Reflect.get(target,key,receiver);
+        return res;
+    },
+    set(target,key,value,receiver){
+        // 触发更新
+        const res=Reflect.set(target,key,value,receiver);
+        return res;
+    }
+})
+</code></pre>
+<ul>
+<li>1.<code>Object.defineProperty</code>只能遍历对象属性进行劫持，无法检测对象属性的添加和移除，Vue2为了解决这个问题提供了<code>$set</code>和<code>$delete</code>实例方法，Proxy可以劫持整个对象，并返回一个新对象，通过操作新对象来达到响应式目的；</li>
+<li>2.<code>Object.defineProperty</code>无法监控到数组下标及数组长度的变化，Proxy可以直接监听数组的变化(push、shift、splice)；</li>
+<li>3.Proxy有多达13种拦截方法，不限于apply、ownKeys、deleteProperty、has等，这是<code>Object.defineProperty</code>不具备的;</li>
+<li>4.性能问题，当data中数据比较多且层级很深的时候，<code>Object.defineProperty</code>要遍历data中所有数据并给其设置响应式，会导致性能下降；Proxy只在getter时才对对象的下一层进行劫持(优化了性能)，真正访问到的内部对象才会变成响应式;</li>
+</ul>
+<h3 id="2vue中watch和computed的使用差异是什么">2.vue中watch和computed的使用差异是什么</h3>
+<pre><code class="language-js">const count=ref(0);
+watch(count,(newVal,oldVal)=&gt;{
+    // 回调
+})
+const obj=reactive({
+    a:1,
+    b:2
+})
+const c=computed((=&gt;obj.a+obj.b));
+</code></pre>
+<ul>
+<li>1.计算属性会自动追踪响应式依赖，当响应式数据改变时，会重新计算并缓存计算结果。computed和methods的差异是它具备缓存性，方法调用总会在重渲染发生时再次执行函数。</li>
+<li>2.计算属性默认总是只读的，当需要用到“可写”的属性，可以通过同时提供getter和setter来创建。</li>
+<li>3.不要在计算属性getter中做异步请求或者更改DOM，计算属性的getter应只做计算而没有任何其他副作用。</li>
+<li>4.使用watch函数在每次响应式状态发生变化时触发回调函数，可以在回调中执行异步操作等复杂逻辑。</li>
+<li>5.通过设置immediate可以在侦听器创建时立即触发回调，指明<code>flush:'post'</code>可以异步执行回调函数。</li>
+</ul>
+<h3 id="3什么是虚拟dom">3.什么是虚拟DOM？</h3>
+<pre><code class="language-js">var vnode={
+    type:'div',
+    props:{
+        id:'foo'
+    },
+    children:[{
+        type:'p',
+        children:'hello word'
+    }]
+}
+</code></pre>
+<ul>
+<li>1.虚拟DOM是描述真实DOM结构及其属性信息的JS对象；</li>
+<li>2.使用虚拟DOM能够有效减少直接操作DOM的次数，改为查找JS对象的属性变化，从而提高程序性能；</li>
+<li>3.使用虚拟DOM可实现跨平台，根据虚拟DOM可以渲染成不同平台上对应的内容，如原生App(Android、ios)，小程序、浏览器等；</li>
+<li>4.虚拟DOM通过diff算法，将前后两次的虚拟DOM树进行对比，定位出具体需要更新的部分，最终在真实DOM中局部渲染。</li>
+</ul>
+<h3 id="4vue中nexttick有什么作用">4.vue中<code>nextTick()</code>有什么作用？</h3>
+<pre><code class="language-js">// nextTick代码实现
+function nextTick(fn) {
+    const p2 = Promise.resolve();
+    return fn ? p2.then(this ? fn.bind(this) : fn) : p2;
+}
+// 使用方法
+async function increment() {
+    Number.value++;
+    // DOM还未更新 输出0
+    console.log(document.getElementById('num').textContent);
+    await nextTick();
+    // DOM此时已经更新 输出1
+    console.log(document.getElementById('num').textContent);
+}
+</code></pre>
+<ul>
+<li>1.<code>nextTick()</code>是等待下一次DOM更新刷新的工具方法，可以在状态改变后立即使用，以等待DOM更新完成。你可以传递一个回调函数作为参数，或者<code>await</code>返回<code>Promise</code>；</li>
+<li>2.Vue中如果数据变化，Vue不会立刻更新DOM，而是开启一个队列，把组件更新函数保存在队列中，等同一事件循环发生的所有数据变更完成后，再统一对视图进行更新。此时如果想要获取更新后的DOM状态，就可以使用<code>nextTick()</code>；</li>
+<li>3.使用场景：在<code>created</code>或<code>setup</code>中想要获取DOM时，在响应式数据变化后获取DOM更新后的状态时；</li>
+</ul>
+<h3 id="5vue组件间如何通信">5.vue组件间如何通信？</h3>
+<pre><code class="language-js">const props = defineProps(['foo']);
+console.log(props.foo);
+const emit = defineEmits(['inFocus', 'submit']);
+function buttonClick() {
+    emit('submit')
+}
+
+const count = ref(0);
+provide('key', count);
+const message = inject('message');
+</code></pre>
+<ul>
+<li>1.props/emits</li>
+</ul>
+<p>父组件通过props向子组件传递数据，子组件通过emit方法和父组件通信。所有的props都遵循着单向绑定原则，即单向数据流，props因父组件的更新而变化，自然德将新的状态向下流往子组件，而不会逆向传递，这避免了子组件意外修改父组件的状态的情况，不然应用的数据流将很容易变得混乱而难以理解，子组件应该抛出一个事件来通知父组件做出改变。</p>
+<ul>
+<li>2.provide/inject</li>
+</ul>
+<p>有一些多层级嵌套的组件，形成了一颗巨大的组件树，而某个深层次的子组件需要一个较远组件中的部分数据，在这种情况下，如果仅适用props则必须将其沿着组件链逐级传递下去，这会非常麻烦，provide和inject可以帮助我们解决这一问题，一个父组件相对于其所有的后代组件，会作为依赖提供者，任何后代的组件树，无论层级多深，都可以注入由父组件提供给整条链路的依赖，当提供/注入响应式数据时，建议尽可能将任何对响应式状态的变更都保持在供给方组件中，我们可能需要在注入组件中更改数据，在这种情况下，我们推荐在供给方组件内声明并提供一个更改数据的方法函数。</p>
+<ul>
+<li>3.vuex/pinia</li>
+</ul>
+<p>当我们的应用遇到多个组件共享状态时，推荐使用此方法。</p>
+<h3 id="6谈谈你对keep-alive的了解">6.谈谈你对<code>keep-alive</code>的了解？</h3>
+<pre><code class="language-html">&lt;keep-alive&gt;
+    &lt;router-view v-if=&quot;$route.meta.keepAlive&quot;&gt;
+    &lt;!--被缓存的页面--&gt;
+    &lt;/router-view&gt;
+&lt;/keep-alive&gt;
+&lt;router-view v-if=&quot;$route.meta.keepAlive&quot;&gt;
+&lt;!--不缓存的页面--&gt;
+&lt;/router-view&gt;
+</code></pre>
+<p><code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>是一个内置组件，它的功能是在多个组件间动态切换时缓存被移除的组件实例。<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>它包裹动态组件时，会缓存不活跃的组件实例，而不是销毁它们。任何时候都只能有一个活跃组件实例作为<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>的直接子节点。</p>
+<ul>
+<li>1.一般结合路由<code>vue-router</code>和动态组件一起使用，用于缓存组件；</li>
+<li>2.提供<code>include</code>和<code>exclude</code>属性，<code>include</code>表示只有名称匹配的组件会被缓存，<code>exclude</code>表示任何名称匹配的组件都不会缓存；这两个prop的值都可以是一个以英文逗号分隔的字符串。一个正则表达式，或者是包含这两种类型的一个数组。</li>
+<li>3.<code>max prop</code>来限制可被缓存的最大组件实例数。<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>的行为在指定max后类似一个LRU缓存；如果缓存的实例数量即将超过指定的那个最大数量，则最久没有被访问的缓存实例将被销毁，以便为新的实例腾出空间。</li>
+<li>4.当一个组件在<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>中被切换时，它的<code>Actived</code>和<code>deactivated</code>生命周期钩子将被调用，用来替代<code>mounted</code>和<code>unmounted</code>。这适用于直接子节点及其所有子孙节点。</li>
+</ul>
+<h3 id="7vue-router中常用的路由工作模式">7.vue-router中常用的路由工作模式</h3>
+<pre><code class="language-js">const routes = [
+    {
+        path: '/',
+        component: Home
+    },
+    {
+        path: '/about',
+        component: Posts
+    }
+];
+const router = createRouter({
+    history: createWebHashHistory(),
+    routes
+})
+let app = createApp(App);
+app.use(router);
+</code></pre>
+<p><code>vue-router</code>目前支持三种模式，hash模式、HTML5模式和memory模式，我们常用的是前两种模式。</p>
+<ul>
+<li>1.hash模式</li>
+</ul>
+<p>基于<code>location.hash</code>来实现的，<code>location.hash</code>的值就是URL中<code>#</code>后面的内容，不过对SEO有不好的影响。</p>
+<pre><code>1.URL中hash值只是客户端的一种状态，也就是说当向服务器端发出请求时，hash部分不会被发送，改变hash不会重新加载页面。
+2.hash值得改变，都会在浏览器的访问历史中增加一个记录，因此我们能通过浏览器的回退、前进控制hash的切换。
+3.可以使用`hashChange`事件来监听hash值得变化。
+</code></pre>
+<ul>
+<li>2.HTML5模式</li>
+</ul>
+<p>HTML5提供了<code>History API</code> <code>history.pushState()</code>和<code>history.replaceState()</code>，可以在不进行刷新的情况下，操作浏览器的历史记录，需要在服务器上添加一个简单的回退路由，如果URL不匹配任何静态资源，应提供应用程序中的<code>index.html</code>相同的页面。</p>
+<pre><code>1.`history.pushState()`和`history.replaceState()`两个API来操作实现URL的变化；
+2.可以使用`propstate`事件来监听URL的变化，从而对页面进行跳转(渲染);
+3.`history.pushState()`和`history.replaceState()`不会触发`propstate`事件，这时我们需要手动触发页面跳转(渲染)。
+</code></pre>
+<h3 id="8说一说vue的生命周期钩子函数">8.说一说vue的生命周期钩子函数？</h3>
+<pre><code class="language-html">&lt;template&gt;
+    &lt;button id=&quot;count&quot; @click=&quot;count++&quot;&gt;{{count}}&lt;/button&gt;
+&lt;/template&gt;
+&lt;script setup&gt;
+    import {ref,onUpdated} from 'vue';
+    const count=ref(0);
+    onUpdated(()=&gt;{
+        var a=document.getElementById('count').textContent;
+    })
+&lt;/script&gt;
+</code></pre>
+<p>在vue3中，setup函数替代了vue2的beforeCreate和created钩子函数。</p>
+<ul>
+<li><strong>onBeforeMount()</strong> 在组件被挂载之前调用，当这个钩子函数被调用时，组件已经完成了其响应式状态的设置，但还没有创建DOM节点，即将首次执行DOM渲染过程。</li>
+<li><strong>onMounted()</strong> 在组件挂载完成后执行，当调用<code>onMounted</code>时，vue会自动将回调函数注册到当前被初始化的组件实例上，这意味着这些钩子应当在组件初始化时被同步注册，其所有同步子组件都已经被挂载，其自身的DOM树已经创建完成并插入了父容器中，这个钩子通常用于执行需要访问组件所渲染的DOM树相关的副作用，对于嵌套组件，组件在挂载相关的生命周期钩子函数时，先执行父组的<code>beforeMount</code>，然后是子组件的<code>beforeMount</code>，接着是子组件的<code>mounted</code>，最后执行父组件的<code>mounted</code>。</li>
+<li><strong>onBeforeUpdate()</strong> 在组件即将因为响应式状态变更而更新其DOM树之前调用，在<code>beforeUpdate</code>钩子函数执行时，组件的DOM还未更新，如果你想在组件更新前访问DOM，比如手动移除已添加的事件监听器，你可以注册这个钩子函数。</li>
+<li><strong>onUpdated()</strong> 在组件因为响应式状态变更而更新DOM树之后调用，父组件的更新钩子将在其子组件的更新钩子之后调用，如果要监听数据的改变并执行某些逻辑，最好不要使用<code>updated</code>钩子函数，而用计算属性或<code>watcher</code>取代。因为任何数据的变化导致组件更新都会执行<code>updated</code>钩子函数，注意：不要在<code>updated</code>钩子函数中更改数据，因为这样会再次触发组件更新，导致无限递归更新，父组件的更新不一定导致子组件的更新，因为更新粒度是组件级别的。</li>
+<li><strong>onBeforeUnmount()</strong> 在组件实例被卸载之前调用，当这个钩子被调用时，组件实例依然还保有全部功能。</li>
+<li><strong>onUnmounted()</strong> 在组件实例被卸载之后调用，其所有子组件都已经被卸载，可以在这个钩子函数手动清理一些副作用，例如计时器、DOM事件监听器或者与服务器断开连接。</li>
+<li><strong>onErrorCaptured()</strong> 注册一个钩子，在捕获了后代组件传递的错误时调用。</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-51-60/" class="post-title gt-a-link">
+                    Vue2/3面试题(51-60)
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">这个人很懒 什么也不想说</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Copyright ©2022 |<a href="https://ixoxxoxi.github.io/" target="_blank">Learning Notes</a>| All Rights Reserved.
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://ixoxxoxi.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

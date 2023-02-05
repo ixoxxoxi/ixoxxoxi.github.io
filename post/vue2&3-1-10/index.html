@@ -1,0 +1,493 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Vue2/3面试题(1-10) | Learning Notes</title>
+
+<link rel="shortcut icon" href="https://ixoxxoxi.github.io/favicon.ico?v=1675607442775">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://ixoxxoxi.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Learning Notes
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1675607442775"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Vue2/3面试题(1-10)
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-12-24 ·
+                    </time>
+                    
+                        <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tags">
+                            # Vue2/3
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="1-你怎么理解指令工作中你封装过自定义指令吗举一些例子">1. 你怎么理解指令？工作中你封装过自定义指令吗？举一些例子</h3>
+<p>指令本质上是对dom的操作，vue封装这些指令就是为了我们更为合理符合规范的操作dom，避免DOM滥操作。</p>
+<!-- more -->
+<ul>
+<li>v-permission指令</li>
+</ul>
+<p>有权限则显示按钮等模块，没有权限则不显示</p>
+<pre><code class="language-html">    &lt;div id=&quot;app&quot;&gt;
+        &lt;button v-permission=&quot;'admin'&quot;&gt;管理员-按钮&lt;/button&gt;
+        &lt;button v-permission=&quot;'editor'&quot;&gt;作者-按钮&lt;/button&gt;
+        &lt;!-- 游客按钮不显示 --&gt;
+        &lt;button v-permission=&quot;'guest'&quot;&gt;游客-按钮&lt;/button&gt;
+        &lt;button v-permission=&quot;user.role&quot;&gt;user-按钮&lt;/button&gt;
+    &lt;/div&gt;
+</code></pre>
+<pre><code class="language-js">        function checkArray(role) {
+            let arr = ['admin', 'editor'];
+            let index = arr.indexOf(role);
+            return index &gt; -1 ? true : false;
+        }
+        Vue.directive('permission', {
+            inserted: function (el, binding) {
+                if (!(binding.value &amp;&amp; checkArray(binding.value))) {
+                    console.log(binding.value + '用户组没有权限使用该功能');
+                    el.parentNode &amp;&amp; el.parentNode.removeChild(el)
+                }
+            }
+        })
+
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    user: { id: '001', name: 'wangcai', age: 18, role: 'admin' }
+                }
+            },
+            methods: {
+
+            }
+        })
+</code></pre>
+<ul>
+<li>v-draggable 拖拽指令</li>
+</ul>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+    &lt;style&gt;
+        #app {
+            width: 100%;
+            height: 500px;
+            outline: 1px solid blue;
+            position: relative;
+        }
+
+        .drag {
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            position: absolute;
+        }
+    &lt;/style&gt;
+    &lt;script src=&quot;./lib/vue@2.7.10.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;app&quot;&gt;
+        &lt;div class=&quot;drag&quot; v-draggable&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;script&gt;
+        Vue.directive('draggable', {
+            inserted: function (el) {
+                el.style.cursor = 'move';
+                el.onmousedown = function (e) {
+                    let disx = e.pageX - el.offsetLeft;
+                    let disy = e.pageY - el.offsetTop;
+
+                    document.onmousemove = function (e) {
+                        let x = e.pageX - disx;
+                        let y = e.pageY - disy;
+                        let maxX = document.body.clientWidth - parseInt(window.getComputedStyle(el).width);
+                        let maxY = document.body.clientHeight - parseInt(window.getComputedStyle(el).height);
+
+                        if (x &lt; 0) {
+                            x = 0
+                        } else if (x &gt; maxX) {
+                            x = maxX
+                        }
+
+                        if (y &lt; 0) {
+                            y = 0
+                        } else if (y &gt; maxY) {
+                            y = maxY
+                        }
+                        el.style.left = x + 'px';
+                        el.style.top = y + 'px';
+                    }
+                    document.onmouseup = function () {
+                        document.onmousemove = document.onmouseup = null
+                    }
+                }
+            }
+        })
+
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                }
+            },
+            methods: {
+
+            }
+        })
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="2-计算属性能不能绑定在v-model上">2. 计算属性能不能绑定在v-model上？</h3>
+<p>计算属性可以有setter，所以可以使用在v-model上面。</p>
+<h3 id="3-侦听器能监听哪些变量变化">3. 侦听器能监听哪些变量变化？</h3>
+<p>能够监听data、计算属性、vuex数据、$route等，凡是那些带有__ob__变量都能被监听到。</p>
+<h3 id="4-说一下vue的响应式原理你是如何理解mvvm的">4. 说一下Vue的响应式原理？(你是如何理解MVVM的)</h3>
+<p>回答版本一：<br>
+当vue组件被创建时，在生命周期的第一阶段，Vue使用Object.defineProperty()对data选项进行遍历劫持并添加get/set钩子；在生命周期第二阶段，指令第一次与声明式变量touch时，发生依赖收集，再调用当前组件的watcher第一次更新DOM，DOM视图就显示出来了。当声明式变量发生变化时，vue再次通知Watcher更新视图，这就是响应式（原理）</p>
+<p>回答版本二：<br>
+当new Vue时，Vue源码中有一个Observer，会对data中所有的数据进行劫持，把data中的数据处理成响应式，每处理一个响应式数据，都有一个Dep与之对应。同时编译模板，编译模板时会找到小胡子语法和指令，处理小胡子语法和指令时，会创建出一个个的Watcher，这些Watcher会存储到对应的Dep中，这个过程叫依赖收集，同时调用对应的Updater，完成对应的页面的初始化。当数据发生变化时，在Observer的setter中会监听到，数据变化，就通知Dep中的Watcher更新视图，每个Watcher都绑定了更新视图的回调函数。</p>
+<h3 id="5-你工作中有没有封装比较好的组件">5. 你工作中有没有封装比较好的组件？</h3>
+<p>一个样式丰富的button组件</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+    &lt;style&gt;
+        .mybtn {
+            display: inline-block;
+            line-height: 1;
+            white-space: nowrap;
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #dcdfe6;
+            color: #606266;
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+            margin: 0;
+            transition: .1s;
+            font-weight: 500;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .primary {
+            color: #fff;
+            background-color: #409eff;
+            border-color: #409eff;
+        }
+
+        .success {
+            color: #fff;
+            background-color: #67c23a;
+            border-color: #67c23a;
+        }
+
+        .info {
+            color: #fff;
+            background-color: #909399;
+            border-color: #909399;
+        }
+
+        .warning {
+            color: #fff;
+            background-color: #e6a23c;
+            border-color: #e6a23c;
+        }
+
+        .danger {
+            color: #fff;
+            background-color: #f56c6c;
+            border-color: #f56c6c;
+        }
+
+        .is-round {
+            border-radius: 20px;
+            padding: 12px 23px;
+        }
+
+        .is-plain {
+            color: #409eff;
+            background: #ecf5ff;
+            border-color: #b3d8ff;
+        }
+    &lt;/style&gt;
+    &lt;script src=&quot;./lib/vue@2.7.10.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;app&quot;&gt;
+        &lt;mybtn text=&quot;默认按钮&quot; type=&quot;default&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;主要按钮&quot; type=&quot;primary&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;成功按钮&quot; type=&quot;success&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;信息按钮&quot; type=&quot;info&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;警告按钮&quot; type=&quot;warning&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;危险按钮&quot; type=&quot;danger&quot;&gt;&lt;/mybtn&gt;
+        &lt;hr&gt;
+        &lt;mybtn text=&quot;朴素按钮&quot; plain type=&quot;default&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;主要按钮&quot; plain type=&quot;primary&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;成功按钮&quot; plain type=&quot;success&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;信息按钮&quot; plain type=&quot;info&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;警告按钮&quot; plain type=&quot;warning&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;危险按钮&quot; plain type=&quot;danger&quot;&gt;&lt;/mybtn&gt;
+        &lt;hr&gt;
+        &lt;mybtn text=&quot;圆角按钮&quot; round type=&quot;default&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;主要按钮&quot; round type=&quot;primary&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;成功按钮&quot; round type=&quot;success&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;信息按钮&quot; round type=&quot;info&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;警告按钮&quot; round type=&quot;warning&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;危险按钮&quot; round type=&quot;danger&quot;&gt;&lt;/mybtn&gt;
+
+    &lt;/div&gt;
+
+    &lt;script id=&quot;mybutton&quot; type=&quot;x-template&quot;&gt;
+        &lt;button v-text=&quot;text&quot; class=&quot;mybtn&quot; :class=&quot;[btnColor,isPlain,isRound]&quot;&gt;&lt;/button&gt;
+    &lt;/script&gt;
+    &lt;script&gt;
+        Vue.component(&quot;mybtn&quot;, {
+            template: &quot;#mybutton&quot;,
+            props: {
+                text: {
+                    type: String, default: '默认内容'
+                },
+                type: {
+                    type: String, default: 'primary'
+                },
+                round: {
+                    type: Boolean, default: false
+                },
+                plain: {
+                    type: Boolean, default: false
+                }
+            },
+            computed: {
+                btnColor() {
+                    switch (this.type) {
+                        case 'primary':
+                            return 'primary'
+                            break;
+                        case 'success':
+                            return 'success'
+                            break;
+                        case 'info':
+                            return 'info'
+                            break;
+                        case 'warning':
+                            return 'warning'
+                            break;
+                        case 'danger':
+                            return 'danger'
+                            break;
+                        default:
+                            return ''
+                    }
+                },
+                isRound() {
+                    return this.round ? 'is-round' : ''
+                },
+                isPlain() {
+                    return this.plain ? 'is-plain' : ''
+                }
+            }
+        });
+
+        let vm = new Vue({
+            el: &quot;#app&quot;,
+            data() {
+                return {};
+            },
+            methods: {},
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="6-说一下vue的生命周期展开说不仅仅是那几个钩子">6. 说一下Vue的生命周期（展开说，不仅仅是那几个钩子）？</h3>
+<p>Vue的生命周期指的是组件从“生”到“死”的全过程，一共分四个阶段，不同阶段有不同的钩子函数：</p>
+<ul>
+<li>创建阶段：beforeCreate、created</li>
+<li>挂载阶段：beforeMount、mounted</li>
+<li>更新阶段：beforeUpdate、updated</li>
+<li>销毁阶段：beforeDestroy、destroyed</li>
+<li>与动态组件有关的两个特殊的钩：activated(激活)、deactivated(休眠)</li>
+<li>与组件异常捕获有关的一个钩子：errorCaptured</li>
+</ul>
+<p>在beforeCreate之前会声明methods中的方法和声明生命周期钩子函数，这个钩子函数我们用的并不多</p>
+<p>在created之前会注入一些数据，初始化响应式系统，我们通常在这个钩子函数中调接口，获取路由参数等</p>
+<p>在beforeMount之前会通过el $meount template找模板，会把模块变成render函数  调用render函数创建虚拟DOM，虚拟DOM转化成真实DOM，进行挂载，通常这个钩子函数我们也用不到</p>
+<p>在mounted时，已表示真实DOM已挂载完毕，我们在这个钩子中通常调接口，开定时器，DOM操作，建立websocket连接  实例化echarts实例等。</p>
+<p>当数据变化时，会触发beforeUpdate钩子，这个钩子通常也用不到。</p>
+<p>在updated之前，要生成新的虚拟DOM，新的虚拟DOM和老的虚拟DOM进行对比，会执行patch运算，diff算法，找到两个虚拟DOM的最小差异，找到后，进行异步更新，key的目的就是最快找到最小差异，这个钩子也不常用，但是有点类似于watch侦听器或类似于$nextTick()，我们不能在这个钩子中更新数据，会导致死循环。</p>
+<p>当我们手动调用$destory()或路由切换时，会调用beforeDestroy这个钩子函数，我们可以在这个钩子函数中清空定时器，解除事件绑定，清除缓存...</p>
+<p>当组件销毁时，就会移除当前组件的watcher，DOM就无法再更新，移除所有子组件，移除事件监听器，响应式系统就会失效，组件就死亡了，这个钩子函数我们用的也不多。</p>
+<h3 id="7-虚拟dom存在的价值点在哪里">7. 虚拟DOM存在的价值点在哪里？</h3>
+<p>把DOM更新粒度降到最低，规避人为DOM滥操作，提升性能。配合DIFF算法，可以让页面性能有质的提升。</p>
+<h3 id="8-vue有哪些内置组件vue中实现条件渲染渲染有哪些办法">8. Vue有哪些内置组件？Vue中实现条件渲染渲染有哪些办法？</h3>
+<p>五个内置组件(slot,transition,component,keep-alive)</p>
+<p>条件渲染: v-if v-show 动态组件</p>
+<h3 id="9-你有封装过vue插件怎么封装的封装过什么">9. 你有封装过Vue插件？怎么封装的？封装过什么？</h3>
+<p>在Vue生态中，除了Vue本身，其它所有与Vue相关的第三方包，都是插件，都得以插件的方式进行集成。<br>
+作用：是一种更加高级的代码复用技术，可以以插件的方式为我们提供可复用的组件、混入、指令、过滤器、原型链API。</p>
+<p>两种写法：</p>
+<ul>
+<li>第一种写法： const Plugin = { install (Vue) { } }</li>
+<li>第二种写法： const Plugin = function (Vue) {}</li>
+</ul>
+<p>在项目中我之前二次封装axios，把它封装成一个插件，参考：<br>
+<a href="https://juejin.cn/post/6844903599764406280">https://juejin.cn/post/6844903599764406280</a></p>
+<p>封装右键菜单插件：<br>
+<a href="https://juejin.cn/post/6906788973981466637">https://juejin.cn/post/6906788973981466637</a></p>
+<h3 id="10-谈一谈你对-vuenexttick-的理解有什么用">10. 谈一谈你对 Vue.nextTick() 的理解？有什么用？</h3>
+<p>数据变化，进行set操作，代码确实是同步的，但是set行为是异步的；set操作修改声明变量，触发re-render生成新的虚拟DOM，进一步执行diff运算，找到脏节点集合，交给Vue背后的更新队列去执行循环更新。在更新队列中每一个更新任务都是一个更新单元，nextTick表示下一个更新单元（更新周期）。</p>
+<p>我们set操作data（更新DOM），你希望访问这个DOM的最新状态时，使用this.$nextTick(handler)。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">这个人很懒 什么也不想说</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Copyright ©2022 |<a href="https://ixoxxoxi.github.io/" target="_blank">Learning Notes</a>| All Rights Reserved.
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://ixoxxoxi.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

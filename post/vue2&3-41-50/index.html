@@ -1,0 +1,262 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Vue2/3面试题(41-50) | Learning Notes</title>
+
+<link rel="shortcut icon" href="https://ixoxxoxi.github.io/favicon.ico?v=1675607442775">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://ixoxxoxi.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Learning Notes
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1675607442775"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Vue2/3面试题(41-50)
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-12-31 ·
+                    </time>
+                    
+                        <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tags">
+                            # Vue2/3
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="41vue-router路由的两种模式">41.vue-router路由的两种模式</h3>
+<p>vue-router中默认使⽤的是hash模式：</p>
+<!-- more -->
+<ul>
+<li>1）hash模式，带#。如：<code>http://localhost:8080/#/page</code>。改变<code>hash</code>，浏览器本身不会有任何请求服务器动作。</li>
+<li>2）history模式，不带#， 如：<code>http://localhost:8080/page</code> ，路径没有<code>#</code>。基于<code>HTML5</code>的<code>pushState</code>、<code>replaceState</code>实现。</li>
+</ul>
+<p>hash:</p>
+<ul>
+<li>1)有<code>#</code>号</li>
+<li>2)能够兼容到<code>IE8</code></li>
+<li>3)实际的<code>url</code>之前使⽤哈希字符，这部分url不会发送到服务器，不需要在服务器层⾯上进⾏任何处理</li>
+<li>4)刷新不会存在<code>404</code>问题</li>
+<li>5)不需要服务器任何配置</li>
+</ul>
+<p>history:</p>
+<ul>
+<li>1)没有 <code>#</code> 号</li>
+<li>2)只能兼容到<code>IE10</code></li>
+<li>3)每访问⼀个⻚⾯都需要服务器进⾏路由匹配⽣成<code>html</code>⽂件再发送响应给浏览器，消耗服务器⼤量资源</li>
+<li>4)浏览器直接访问嵌套路由时，会报 <code>404</code> 问题。</li>
+<li>5)需要在服务器配置⼀个回调路由</li>
+</ul>
+<h3 id="42-在创建挂载更新销毁阶段vue在背后分别做了些什么事儿">42. 在创建/挂载/更新/销毁阶段，Vue在背后分别做了些什么事儿？</h3>
+<p>Vue的生命周期指的是组件从“生”到“死”的全过程，一共分四个阶段，不同阶段有不同的钩子函数：</p>
+<ul>
+<li>创建阶段：<code>beforeCreate</code>、<code>created</code></li>
+<li>挂载阶段：<code>beforeMount</code>、<code>mounted</code></li>
+<li>更新阶段：<code>beforeUpdate</code>、<code>updated</code></li>
+<li>销毁阶段：<code>beforeDestroy</code>、<code>destroyed</code></li>
+<li>与动态组件有关的两个特殊的钩：<code>activated</code>(激活)、<code>deactivated</code>(休眠)</li>
+<li>与组件异常捕获有关的一个钩子：<code>errorCaptured</code></li>
+</ul>
+<p>在<code>beforeCreate</code>之前会声明<code>methods</code>中的方法和声明生命周期钩子函数，这个钩子函数我们用的并不多</p>
+<p>在<code>created</code>之前会注入一些数据，初始化响应式系统，我们通常在这个钩子函数中调接口，获取路由参数等</p>
+<p>在<code>beforeMount</code>之前会通过<code>el</code> <code>$mount</code> <code>template</code>找模板，会把模块变成<code>render</code>函数  调用<code>render</code>函数创建<code>虚拟DOM</code>，<code>虚拟DOM</code>转化成<code>真实DOM</code>，进行挂载，通常这个钩子函数我们也用不到</p>
+<p>在<code>mounted</code>时，已表示<code>真实DOM</code>已挂载完毕，我们在这个钩子中通常调接口，开定时器，DOM操作，建立websocket连接  实例化echarts实例等。</p>
+<p>当数据变化时，会触发<code>beforeUpdate</code>钩子，这个钩子通常也用不到。</p>
+<p>在<code>updated</code>之前，要生成新的虚拟DOM，新的虚拟DOM和老的虚拟DOM进行对比，会执行<code>patch运算</code>，<code>diff算法</code>，找到两个虚拟DOM的最小差异，找到后，进行异步更新，key的目的就是最快找到最小差异，这个钩子也不常用，但是有点类似于<code>watch侦听器</code>或类似于<code>$nextTick()</code>，我们不能在这个钩子中更新数据，会导致死循环。</p>
+<p>当我们手动调用<code>$destory()</code>或路由切换时，会调用<code>beforeDestroy</code>这个钩子函数，我们可以在这个钩子函数中清空定时器，解除事件绑定，清除缓存...</p>
+<p>当组件销毁时，就会移除当前组件的<code>watcher</code>，DOM就无法再更新，移除所有子组件，移除事件监听器，响应式系统就会失效，组件就死亡了，这个钩子函数我们用的也不多。</p>
+<h3 id="43-响应式原理发生在vue哪些生命周期阶段">43. 响应式原理，发生在Vue哪些生命周期阶段？</h3>
+<p>在<code>created</code>之前会注入一些数据，初始化响应式系统，我们通常在这个钩子函数中调接口，获取路由参数等</p>
+<h3 id="44-虚拟dom在哪些阶段生成的">44. 虚拟DOM，在哪些阶段生成的？</h3>
+<p>在<code>beforeMount</code>之前会通过<code>el</code> <code>$mount</code> <code>template</code>找模板，会把模块变成<code>render函数</code>，调用<code>render函数</code>创建虚拟DOM，虚拟DOM转化成真实DOM，进行挂载，通常这个钩子函数我们也用不到</p>
+<p>在<code>updated</code>之前，要生成新的虚拟DOM，新的虚拟DOM和老的虚拟DOM进行对比，会执行<code>patch运算</code>，<code>diff算法</code>，找到两个虚拟DOM的最小差异，找到后，进行异步更新，<code>key</code>的目的就是最快找到最小差异，这个钩子也不常用，但是有点类似于<code>watch侦听器</code>或类似于<code>$nextTick()</code>，我们不能在这个钩子中更新数据，会导致死循环。</p>
+<h3 id="45-哪些生命周期钩子可以执行多次哪些执行一次">45. 哪些生命周期钩子可以执行多次？哪些执行一次？</h3>
+<p>更新阶段：<code>beforeUpdate</code>、<code>updated </code></p>
+<p>与动态组件有关的两个特殊的钩：<code>activated</code>(激活)、<code>deactivated</code>(休眠)</p>
+<p>上面四个钩子函数执行多次。</p>
+<h3 id="46-什么虚拟dom">46. 什么虚拟DOM？</h3>
+<p>是一个很大的JSON数据，用于描述视图模板的，保存在内存中</p>
+<h3 id="47-谈一谈你对-mvvm-mvc-mvp的理解">47. 谈一谈你对 MVVM、MVC、MVP的理解？</h3>
+<ul>
+<li><code>MVVM</code>流程 : M数据层 -&gt; VM虚拟DOM层 -&gt; V视图层</li>
+<li>网页本质 = M数据层 + V视图结构</li>
+<li><code>M+V</code>是怎么组装的？（ <code>MVC</code>  <code>MVP</code>  <code>MVVM</code>）</li>
+<li><code>M+V</code>在哪儿组装？（前后端分离、前后端不分离、<code>SSR</code>服务端渲染）</li>
+</ul>
+<blockquote>
+<p>进一步理解（阮一峰博客）：<a href="https://www.ruanyifeng.com/blog/2015/02/mvcmvp_mvvm.html">https://www.ruanyifeng.com/blog/2015/02/mvcmvp_mvvm.html</a></p>
+</blockquote>
+<h3 id="48mounted和activated有什么区别deactivated和beforedestroy有什么区别执行次数-使用场景">48.mounted和activated有什么区别？deactivated和beforeDestroy有什么区别？（执行次数、使用场景）</h3>
+<p>这两组钩子的区别和使用场景：</p>
+<ul>
+<li><code>activated</code>(执行多次)</li>
+<li><code>mounted</code>(执行一次)</li>
+<li><code>deactivated</code>(执行多次)</li>
+<li><code>beforeDestroy</code>(执行一次)</li>
+</ul>
+<p>动态组件的作用：</p>
+<ul>
+<li>1）有种<code>v-if</code>的感觉，根据指定条件渲染目标组件，它的<code>is</code>属性等于哪个组件，就显示哪个组件。</li>
+<li>2）场景：它经常配合<code>keep-alive</code>一起使用。</li>
+<li>3）<code>activated</code>(激活)、<code>deactivated</code>(休眠)</li>
+</ul>
+<p>普通组件的挂载与销毁：</p>
+<ul>
+<li>1）<code>mounted</code>挂载</li>
+<li>2）<code>beforeDestroy</code>将要销毁</li>
+</ul>
+<h3 id="49-vue有哪些内置组件">49. Vue有哪些内置组件？</h3>
+<ul>
+<li>component</li>
+<li>transition</li>
+<li>transition-group</li>
+<li>keep-alive</li>
+<li>slot</li>
+</ul>
+<h3 id="50-哪些场景下你会用到动态组件">50. 哪些场景下你会用到动态组件？</h3>
+<p>动态组件也是为了实现条件渲染，在需要使用条件渲染地方，根据不同的组件，渲染不到组件，都可以使用动态组件。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-31-40/" class="post-title gt-a-link">
+                    Vue2/3面试题(31-40)
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">这个人很懒 什么也不想说</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Copyright ©2022 |<a href="https://ixoxxoxi.github.io/" target="_blank">Learning Notes</a>| All Rights Reserved.
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://ixoxxoxi.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

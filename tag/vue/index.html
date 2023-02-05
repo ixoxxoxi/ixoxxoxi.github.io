@@ -1,0 +1,334 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Vue2/3 | Learning Notes</title>
+
+<link rel="shortcut icon" href="https://ixoxxoxi.github.io/favicon.ico?v=1675607442775">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://ixoxxoxi.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Learning Notes
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1675607442775"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+        <div class="current-tag-container">
+            <h2 class="title gt-c-content-color-first">
+                #Vue2/3
+            </h2>
+        </div>
+        <div class="post-list-container">
+    <div class="post-inner">
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-51-60/">
+                            <span class="post-title gt-c-content-color-first">Vue2/3面试题(51-60)</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        51. 在Vue中实现条件渲染渲染有哪些办法？
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-12-31 ·
+                        </time>
+                        
+                            <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tag">
+                                # Vue2/3
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-51-60/" class="post-feature-image"
+                       style="background-image: url('https://img.qimiao.cc/images/2022/08/20/daec36a9cc0339b10c9d253e3fd06555.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-41-50/">
+                            <span class="post-title gt-c-content-color-first">Vue2/3面试题(41-50)</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        41.vue-router路由的两种模式
+vue-router中默认使⽤的是hash模式：
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-12-31 ·
+                        </time>
+                        
+                            <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tag">
+                                # Vue2/3
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-41-50/" class="post-feature-image"
+                       style="background-image: url('https://img.qimiao.cc/images/2022/08/20/7f4d1d605cfebf111dfcba6101585ff6.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-31-40/">
+                            <span class="post-title gt-c-content-color-first">Vue2/3面试题(31-40)</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        31. 你工作中有没有封装比较好的组件？
+↑↑↑同第5题↑↑↑
+
+Tips:面试之前，需要封装几个组件，真实开发中，不会自己封装，都是用第三方封装好的，或公司自己的组件库。
+
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-12-31 ·
+                        </time>
+                        
+                            <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tag">
+                                # Vue2/3
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-31-40/" class="post-feature-image"
+                       style="background-image: url('https://img.qimiao.cc/images/2022/08/20/fca050e14921b739ff2fbab0d1fc72ac.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-21-30/">
+                            <span class="post-title gt-c-content-color-first">Vue2/3面试题(21-30)</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        21.data选项为什么是⼀个函数⽽不是对象？
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-12-24 ·
+                        </time>
+                        
+                            <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tag">
+                                # Vue2/3
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-21-30/" class="post-feature-image"
+                       style="background-image: url('https://img.qimiao.cc/images/2022/08/20/c6825aeb6fda21e60b80d4370f20ce7d.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-11-20/">
+                            <span class="post-title gt-c-content-color-first">Vue2/3面试题(11-20)</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        11. 谈一谈Vue中组件通信？
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-12-24 ·
+                        </time>
+                        
+                            <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tag">
+                                # Vue2/3
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-11-20/" class="post-feature-image"
+                       style="background-image: url('https://img.qimiao.cc/images/2022/08/20/73aa276efc0e94c9c54d92c1c61d3967.jpg')">
+                    </a>
+                
+            </div>
+        
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-1-10/">
+                            <span class="post-title gt-c-content-color-first">Vue2/3面试题(1-10)</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        1. 你怎么理解指令？工作中你封装过自定义指令吗？举一些例子
+指令本质上是对dom的操作，vue封装这些指令就是为了我们更为合理符合规范的操作dom，避免DOM滥操作。
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-12-24 ·
+                        </time>
+                        
+                            <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tag">
+                                # Vue2/3
+                            </a>
+                        
+                    </div>
+                </div>
+                
+                    <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-1-10/" class="post-feature-image"
+                       style="background-image: url('https://img.qimiao.cc/images/2022/08/20/3c1299f14fe9892edd5c2f2ad7f457b2.jpg')">
+                    </a>
+                
+            </div>
+        
+    </div>
+</div>
+        <div class="pagination-container">
+    
+    
+</div>
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">这个人很懒 什么也不想说</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Copyright ©2022 |<a href="https://ixoxxoxi.github.io/" target="_blank">Learning Notes</a>| All Rights Reserved.
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://ixoxxoxi.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

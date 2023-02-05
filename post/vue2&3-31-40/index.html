@@ -1,0 +1,337 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Vue2/3面试题(31-40) | Learning Notes</title>
+
+<link rel="shortcut icon" href="https://ixoxxoxi.github.io/favicon.ico?v=1675607442775">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://ixoxxoxi.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Learning Notes
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1675607442775"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Vue2/3面试题(31-40)
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-12-31 ·
+                    </time>
+                    
+                        <a href="https://ixoxxoxi.github.io/tag/vue/" class="post-tags">
+                            # Vue2/3
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="31-你工作中有没有封装比较好的组件">31. 你工作中有没有封装比较好的组件？</h3>
+<p>↑↑↑同第5题↑↑↑</p>
+<blockquote>
+<p>Tips:面试之前，需要封装几个组件，真实开发中，不会自己封装，都是用第三方封装好的，或公司自己的组件库。</p>
+</blockquote>
+<!-- more -->
+<h3 id="32-说说vue插槽的作用和平时开发中的应用">32. 说说Vue插槽的作⽤和平时开发中的应⽤？</h3>
+<p>插槽的作⽤:</p>
+<pre><code>1）⽀持在⽗组件⾃定义⼦组件中的个内容
+2）让⼦组件更具有通⽤性，不必限定死某个内容
+</code></pre>
+<p>插槽平时开发中的应⽤:</p>
+<pre><code>1）在封装组件时，如果组件中的某个内容是动态的或不确定的，就可以使⽤插槽来代替了。
+2）在使⽤第三⽅库时，往往会通过使⽤插槽类⾃定义第三⽅组件中的某些内容。
+</code></pre>
+<h3 id="33父子组件的生命周期顺序">33.⽗⼦组件的⽣命周期顺序</h3>
+<p>加载渲染过程： ⽗beforeCreate -&gt; ⽗created -&gt; ⽗beforeMount -&gt; ⼦beforeCreate -&gt; ⼦created -&gt; ⼦beforeMount -&gt;⼦mounted -&gt; ⽗mounted</p>
+<p>⼦组件更新过程：⽗beforeUpdate -&gt; ⼦beforeUpdate -&gt; ⼦updated -&gt; ⽗updated</p>
+<p>⽗组件更新过程：⽗beforeUpdate -&gt; ⽗updated</p>
+<p>销毁过程：⽗beforeDestroy -&gt; ⼦beforeDestroy -&gt; ⼦destroyed -&gt; ⽗destroyed</p>
+<h3 id="34-什么是composition-api-和-options-api">34. 什么是Composition API 和 Options API？</h3>
+<p><code>Composition API</code>是⼀组 API，允许我们使⽤导⼊的函数⽽不是声明选项来编写 Vue 组件。它是⼀个涵盖以下 API 的总称：<code>Reactivity API</code>、<code>Lifecycle Hooks</code>、<code>Dependency Injection</code>等等<br>
+使⽤<code>Composition API</code>编写组件时可以根据逻辑功能来组织代码。⽐如可以把⼀个功能所⽤到的API放在⼀起，这样可以让代码⾼内聚和低耦合，进⽽提⾼了代码的逻辑的复⽤性。在 Vue 3 中，它也主要与<code>script setup</code>语法⼀起使⽤。</p>
+<p><code>Options API</code>是指在对应的属性中编写对应的功能模块, ⽐如<code>data</code>定义数据、<code>methods</code>中定义⽅法、<code>computed</code>中定义计算属性、<code>watch</code>中监听属性改变，也包括⽣命周期钩⼦。<br>
+弊端: 当我们实现某⼀个功能时，这个功能对应的代码逻辑会被拆分到各个属性中,当组件变得复杂，导致对应属性的列表也会增⻓，这可能会导致组件难以阅读和理解</p>
+<h3 id="35-composition-api和之options-api有什么区别">35. <code>Composition API</code>和之<code>Options API</code>有什么区别?</h3>
+<ul>
+<li>1）在逻辑组织和逻辑复⽤⽅⾯，<code>Composition API</code>是优于<code>Options API</code>。</li>
+<li>2）<code>Composition API</code>⼏乎是函数，会有更好的类型推断，对于<code>TS</code>的⽀持更友好。</li>
+<li>3）<code>Composition API</code>对 <code>tree-shaking</code> 友好，代码也更容易压缩。</li>
+<li>4）<code>Composition API</code>中⻅不到<code>this</code>的使⽤，减少了<code>this</code>指向不明的情况。</li>
+<li>5）<code>Composition API</code>⽤起来稍微复杂⼀点，⽽<code>Options API</code>就⾮常简单、易于使⽤。</li>
+</ul>
+<h3 id="36-说说vue3中setup函数的作用">36. 说说Vue3中setup函数的作⽤？</h3>
+<p>在Vue3中， <code>setup()</code>函数充当了组件编写<code>Composition API</code>的⼊⼝点。<code>setup</code>函数参数主要有两个参数：</p>
+<p>1）第⼀个参数：<code>props</code> , ⽗组件传递过来的属性会被放到<code>props</code>对象中</p>
+<p>2）第⼆个参数：<code>context</code>, 它⾥⾯包含三个属性：<br>
+<code>attrs</code>：所有的⾮<code>prop</code>的<code>attribute</code>；<br>
+<code>slots</code>：⽗组件传递过来的插槽；<br>
+<code>emit</code>：当我们组件内部需要发出事件时会⽤到<code>emit</code>（因为我们不能访问<code>this</code>，所以不可以通过<code>this.$emit</code>发出事件）</p>
+<p>作用：</p>
+<ul>
+<li>可以在<code>setup</code>中可以定义响应式数据、⽅法、计算属性、侦听器等等。</li>
+<li>可以通过<code>setup</code>的返回值来替代<code>data</code>选项，让数据可以直接在<code>template</code>中使⽤。</li>
+</ul>
+<h3 id="37ref和reactive有什么区别开发中如何选择">37.ref和reactive有什么区别？开发中如何选择？</h3>
+<ul>
+<li>
+<p>ref和reactive都是响应式的API，都可以⽤来定义响应式的数据。</p>
+</li>
+<li>
+<p>ref可以包裹任意数据类型，reactive只能包裹复杂数据类型，⽐如对象、数组。</p>
+</li>
+<li>
+<p>ref返回⼀个ref对象，在script中取值需要通过value属性，但是在模板中使⽤会进⾏解包不需要调⽤value。<br>
+reactive包裹的是复杂数据类型，直接取⾥⾯的属性即可。</p>
+</li>
+<li>
+<p>ref⼏乎可以应⽤在任何场景，⽽且包含reactive适合的场景;<br>
+reactive的应⽤场景⽐较受限，第⼀：值⽐较固定，第⼆：值与值之间是有联系的。</p>
+</li>
+</ul>
+<blockquote>
+<p>开发中尽量选择ref</p>
+</blockquote>
+<h3 id="38-composition-api常的几个函数与用法">38. Composition API常⻅的⼏个函数与⽤法？</h3>
+<ul>
+<li>
+<p>reactive：包裹复杂类型的值，将包裹的值加⼊响应式</p>
+</li>
+<li>
+<p>computed：把⼀些复杂逻辑⽤computed进⾏包裹，如同Options API中的计算属性⼀样，computed会⾃动收集相关依赖，当依赖发⽣变化时，会⾃动进⾏更新</p>
+</li>
+<li>
+<p>⽣命周期：Vue3中想要在<code>beforeCreate</code>和<code>created</code>中做的事，直接在<code>setup</code>中做即可，Vue3的其他的⽣命周期函数都要在前⾯加⼀个<code>on</code>，然后需要在vue中主动引⼊</p>
+</li>
+<li>
+<p>watch：</p>
+<ul>
+<li>1）<code>watch</code>可以监听单个数据源，也可以监听多个数据源</li>
+<li>2）<code>watch</code>是懒执⾏，第⼀次是不会执⾏的，除⾮你为其提供第三个参数中的<code>immediate</code>属性为<code>true</code></li>
+<li>3）<code>watch</code>只有等到监听的数据源发⽣了变化后，才会执⾏第⼆个参数（回调）</li>
+<li>4）<code>watch</code>可以获取监听数据源的前后变化的值</li>
+<li>5）侦听多个数据源的时候，第⼀个参数是数组类型</li>
+</ul>
+</li>
+<li>
+<p>watchEﬀect：</p>
+<ul>
+<li>1）<code>watchEﬀect</code>会⾃动收集依赖，收集的依赖是第⼀个参数，也就是回调函数中有哪些东⻄是加⼊响应式的</li>
+<li>2）如果这个值加⼊了响应式就会被收集起来，当被收集的值发⽣了变化，就会重新执⾏这个回调函数</li>
+<li>3）<code>watchEﬀect</code>第⼀次执⾏是在DOM挂载前执⾏的，所以如果你想在第⼀次执⾏时拿到DOM元素</li>
+<li>4）需要传⼊第⼆个参数，第⼆个参数是⼀个对象，让其<code>ﬂush</code>属性的值为<code>post</code>即可</li>
+</ul>
+</li>
+<li>
+<p>toRefs：</p>
+<ul>
+<li>1）对<code>reactive</code>进⾏解构后就失去了响应式的效果，因为<code>reactive</code>返回的是⼀个<code>Proxy</code>对象</li>
+<li>2）对<code>Proxy</code>对象进⾏解构，拿到的是纯净的值，所以没有了响应式的效果</li>
+<li>3）如果想要对<code>reactive</code>进⾏解构，需要对其包裹⼀个<code>toRefs</code></li>
+<li>4）这么做相当于为<code>reactive</code>中的每⼀个值包裹了⼀个<code>ref</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="39-vue3中的watch和watcheffect有什么区别">39. Vue3中的watch和watchEﬀect有什么区别？</h3>
+<p><code>watch</code>和<code>watchEﬀect</code>都⽤⽤来侦听响应式数据的变化，<code>watch</code>可以侦听指定的源，默认第⼀次不会执⾏，<code>watchEﬀect</code>虽不能指定侦听的源，但是会⾃动收集依赖，并默认会先执⾏⼀次。</p>
+<ul>
+<li>
+<p>watch：</p>
+<ul>
+<li>1）<code>watch</code>可以监听单个数据源，也可以监听多个数据源</li>
+<li>2）<code>watch</code>是懒执⾏，第⼀次是不会执⾏的，除⾮你为其提供第三个参数中的<code>immediate</code>属性为<code>true</code></li>
+<li>
+<ol start="3">
+<li><code>watch</code>只有等到监听的数据源发⽣了变化后，才会执⾏第⼆个参数（回调）</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li><code>watch</code>可以获取监听数据源的前后变化的值</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>侦听多个数据源的时候，第⼀个参数是数组类型</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>watchEﬀect:</p>
+<ul>
+<li>1)<code>watchEﬀect</code>会⾃动收集依赖，收集的依赖是第⼀个参数，也就是回调函数中有哪些东⻄是加⼊响应式的</li>
+<li>2)如果这个值加⼊了响应式就会被收集起来，当被收集的值发⽣了变化，就会重新执⾏这个回调函数</li>
+<li>3)<code>watchEﬀect</code>第⼀次执⾏是在DOM挂载前执⾏的，所以如果你想在第⼀次执⾏时拿到DOM元素</li>
+<li>4)需要传⼊第⼆个参数，第⼆个参数是⼀个对象，让其<code>ﬂush</code>属性的值为<code>post</code>即可</li>
+</ul>
+</li>
+</ul>
+<h3 id="40-说说vue3中script-setup语法糖常用法">40. 说说Vue3中script setup语法糖常⻅⽤法？</h3>
+<p><code>script setup</code> 是在单⽂件组件中使⽤<code> Composition API</code> 的编译时语法糖，相⽐与之前的<code>setup</code>函数写法，它具有更多的优势：</p>
+<ul>
+<li>1）更少的样板内容，更简洁的代码。</li>
+<li>2）能够使⽤纯 <code>TypeScript</code> 声明 <code>props</code> 和抛出事件。</li>
+<li>3）更好的运⾏时性能 (其模板会被编译成与其同⼀作⽤域的渲染函数，没有任何的中间代理)。</li>
+<li>4）更好的<code>IDE</code>类型推断性能 (减少语⾔服务器从代码中抽离类型的⼯作)。</li>
+</ul>
+<p>script setup：</p>
+<ul>
+<li>1）当使⽤ <code>script setup</code> 的时候，任何在 <code>script setup</code> 声明的顶层绑定都能在模板中直接使⽤</li>
+<li>2）声明的顶层绑定：包括变量，函数声明，以及 <code>import</code> 引⼊的内容</li>
+<li>3）响应式数据需要通过<code>ref</code>、<code>reactive</code>来创建</li>
+<li>4）在<code>script setup</code>中导⼊的组件可以直接使⽤</li>
+</ul>
+<p>deﬁneProps：</p>
+<p>1）在<code>script setup</code>语法糖中必须使⽤ <code>deﬁneProps API</code>来声明<code>props</code>，它具备完整的类型推断并且在<code>&lt;script setup&gt;</code> 中是直接可⽤的（不需要额外导⼊）。</p>
+<p>deﬁneEmits：</p>
+<p>1）在<code>script setup</code>语法糖中必须使⽤ <code>deﬁneEmits API</code>来声明 <code>emits</code>，它具备完整的类型推断并且在<code>&lt;script setup&gt;</code> 中是直接可⽤的（不需要额外导⼊）。</p>
+<p>deﬁneExpose：</p>
+<ul>
+<li>1）获取组件的实例可以通过<code>ref</code>来获取，接着组件挂载完成后可通过<code>value</code>拿到组件实例。</li>
+<li>2）当拿到组件实例后，默认是不可以访问这个实例中的⽅法和属性，因为默认没暴露任何⽅法和属性。</li>
+<li>3）因此在Vue3组件中可以⽤<code>deﬁneExpose API</code>来暴露⽅法和属性给外部访问。</li>
+<li>4）<code>deﬁneExpose</code> 也是不需要导⼊，直接使⽤即可</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://ixoxxoxi.github.io/post/vue2&amp;3-21-30/" class="post-title gt-a-link">
+                    Vue2/3面试题(21-30)
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">这个人很懒 什么也不想说</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Copyright ©2022 |<a href="https://ixoxxoxi.github.io/" target="_blank">Learning Notes</a>| All Rights Reserved.
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://ixoxxoxi.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

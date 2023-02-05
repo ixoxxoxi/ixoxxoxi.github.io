@@ -1,0 +1,1354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://ixoxxoxi.github.io</id>
+    <title>Learning Notes</title>
+    <updated>2023-02-05T14:30:58.368Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://ixoxxoxi.github.io"/>
+    <link rel="self" href="https://ixoxxoxi.github.io/atom.xml"/>
+    <subtitle>这个人很懒 什么也不想说</subtitle>
+    <logo>https://ixoxxoxi.github.io/images/avatar.png</logo>
+    <icon>https://ixoxxoxi.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2023, Learning Notes</rights>
+    <entry>
+        <title type="html"><![CDATA[B站vue面试题]]></title>
+        <id>https://ixoxxoxi.github.io/post/b-zhan-vue-mian-shi-ti/</id>
+        <link href="https://ixoxxoxi.github.io/post/b-zhan-vue-mian-shi-ti/">
+        </link>
+        <updated>2023-02-05T14:28:02.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="1vue3响应式为什么使用proxy替代objectdefineproperty">1.vue3响应式为什么使用Proxy替代Object.defineProperty()</h3>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="1vue3响应式为什么使用proxy替代objectdefineproperty">1.vue3响应式为什么使用Proxy替代Object.defineProperty()</h3>
+<!-- more -->
+<pre><code class="language-js">new Proxy(obj,{
+    get(target,key,receiver){
+        // 收集副作用函数
+        const res=Reflect.get(target,key,receiver);
+        return res;
+    },
+    set(target,key,value,receiver){
+        // 触发更新
+        const res=Reflect.set(target,key,value,receiver);
+        return res;
+    }
+})
+</code></pre>
+<ul>
+<li>1.<code>Object.defineProperty</code>只能遍历对象属性进行劫持，无法检测对象属性的添加和移除，Vue2为了解决这个问题提供了<code>$set</code>和<code>$delete</code>实例方法，Proxy可以劫持整个对象，并返回一个新对象，通过操作新对象来达到响应式目的；</li>
+<li>2.<code>Object.defineProperty</code>无法监控到数组下标及数组长度的变化，Proxy可以直接监听数组的变化(push、shift、splice)；</li>
+<li>3.Proxy有多达13种拦截方法，不限于apply、ownKeys、deleteProperty、has等，这是<code>Object.defineProperty</code>不具备的;</li>
+<li>4.性能问题，当data中数据比较多且层级很深的时候，<code>Object.defineProperty</code>要遍历data中所有数据并给其设置响应式，会导致性能下降；Proxy只在getter时才对对象的下一层进行劫持(优化了性能)，真正访问到的内部对象才会变成响应式;</li>
+</ul>
+<h3 id="2vue中watch和computed的使用差异是什么">2.vue中watch和computed的使用差异是什么</h3>
+<pre><code class="language-js">const count=ref(0);
+watch(count,(newVal,oldVal)=&gt;{
+    // 回调
+})
+const obj=reactive({
+    a:1,
+    b:2
+})
+const c=computed((=&gt;obj.a+obj.b));
+</code></pre>
+<ul>
+<li>1.计算属性会自动追踪响应式依赖，当响应式数据改变时，会重新计算并缓存计算结果。computed和methods的差异是它具备缓存性，方法调用总会在重渲染发生时再次执行函数。</li>
+<li>2.计算属性默认总是只读的，当需要用到“可写”的属性，可以通过同时提供getter和setter来创建。</li>
+<li>3.不要在计算属性getter中做异步请求或者更改DOM，计算属性的getter应只做计算而没有任何其他副作用。</li>
+<li>4.使用watch函数在每次响应式状态发生变化时触发回调函数，可以在回调中执行异步操作等复杂逻辑。</li>
+<li>5.通过设置immediate可以在侦听器创建时立即触发回调，指明<code>flush:'post'</code>可以异步执行回调函数。</li>
+</ul>
+<h3 id="3什么是虚拟dom">3.什么是虚拟DOM？</h3>
+<pre><code class="language-js">var vnode={
+    type:'div',
+    props:{
+        id:'foo'
+    },
+    children:[{
+        type:'p',
+        children:'hello word'
+    }]
+}
+</code></pre>
+<ul>
+<li>1.虚拟DOM是描述真实DOM结构及其属性信息的JS对象；</li>
+<li>2.使用虚拟DOM能够有效减少直接操作DOM的次数，改为查找JS对象的属性变化，从而提高程序性能；</li>
+<li>3.使用虚拟DOM可实现跨平台，根据虚拟DOM可以渲染成不同平台上对应的内容，如原生App(Android、ios)，小程序、浏览器等；</li>
+<li>4.虚拟DOM通过diff算法，将前后两次的虚拟DOM树进行对比，定位出具体需要更新的部分，最终在真实DOM中局部渲染。</li>
+</ul>
+<h3 id="4vue中nexttick有什么作用">4.vue中<code>nextTick()</code>有什么作用？</h3>
+<pre><code class="language-js">// nextTick代码实现
+function nextTick(fn) {
+    const p2 = Promise.resolve();
+    return fn ? p2.then(this ? fn.bind(this) : fn) : p2;
+}
+// 使用方法
+async function increment() {
+    Number.value++;
+    // DOM还未更新 输出0
+    console.log(document.getElementById('num').textContent);
+    await nextTick();
+    // DOM此时已经更新 输出1
+    console.log(document.getElementById('num').textContent);
+}
+</code></pre>
+<ul>
+<li>1.<code>nextTick()</code>是等待下一次DOM更新刷新的工具方法，可以在状态改变后立即使用，以等待DOM更新完成。你可以传递一个回调函数作为参数，或者<code>await</code>返回<code>Promise</code>；</li>
+<li>2.Vue中如果数据变化，Vue不会立刻更新DOM，而是开启一个队列，把组件更新函数保存在队列中，等同一事件循环发生的所有数据变更完成后，再统一对视图进行更新。此时如果想要获取更新后的DOM状态，就可以使用<code>nextTick()</code>；</li>
+<li>3.使用场景：在<code>created</code>或<code>setup</code>中想要获取DOM时，在响应式数据变化后获取DOM更新后的状态时；</li>
+</ul>
+<h3 id="5vue组件间如何通信">5.vue组件间如何通信？</h3>
+<pre><code class="language-js">const props = defineProps(['foo']);
+console.log(props.foo);
+const emit = defineEmits(['inFocus', 'submit']);
+function buttonClick() {
+    emit('submit')
+}
+
+const count = ref(0);
+provide('key', count);
+const message = inject('message');
+</code></pre>
+<ul>
+<li>1.props/emits</li>
+</ul>
+<p>父组件通过props向子组件传递数据，子组件通过emit方法和父组件通信。所有的props都遵循着单向绑定原则，即单向数据流，props因父组件的更新而变化，自然德将新的状态向下流往子组件，而不会逆向传递，这避免了子组件意外修改父组件的状态的情况，不然应用的数据流将很容易变得混乱而难以理解，子组件应该抛出一个事件来通知父组件做出改变。</p>
+<ul>
+<li>2.provide/inject</li>
+</ul>
+<p>有一些多层级嵌套的组件，形成了一颗巨大的组件树，而某个深层次的子组件需要一个较远组件中的部分数据，在这种情况下，如果仅适用props则必须将其沿着组件链逐级传递下去，这会非常麻烦，provide和inject可以帮助我们解决这一问题，一个父组件相对于其所有的后代组件，会作为依赖提供者，任何后代的组件树，无论层级多深，都可以注入由父组件提供给整条链路的依赖，当提供/注入响应式数据时，建议尽可能将任何对响应式状态的变更都保持在供给方组件中，我们可能需要在注入组件中更改数据，在这种情况下，我们推荐在供给方组件内声明并提供一个更改数据的方法函数。</p>
+<ul>
+<li>3.vuex/pinia</li>
+</ul>
+<p>当我们的应用遇到多个组件共享状态时，推荐使用此方法。</p>
+<h3 id="6谈谈你对keep-alive的了解">6.谈谈你对<code>keep-alive</code>的了解？</h3>
+<pre><code class="language-html">&lt;keep-alive&gt;
+    &lt;router-view v-if=&quot;$route.meta.keepAlive&quot;&gt;
+    &lt;!--被缓存的页面--&gt;
+    &lt;/router-view&gt;
+&lt;/keep-alive&gt;
+&lt;router-view v-if=&quot;$route.meta.keepAlive&quot;&gt;
+&lt;!--不缓存的页面--&gt;
+&lt;/router-view&gt;
+</code></pre>
+<p><code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>是一个内置组件，它的功能是在多个组件间动态切换时缓存被移除的组件实例。<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>它包裹动态组件时，会缓存不活跃的组件实例，而不是销毁它们。任何时候都只能有一个活跃组件实例作为<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>的直接子节点。</p>
+<ul>
+<li>1.一般结合路由<code>vue-router</code>和动态组件一起使用，用于缓存组件；</li>
+<li>2.提供<code>include</code>和<code>exclude</code>属性，<code>include</code>表示只有名称匹配的组件会被缓存，<code>exclude</code>表示任何名称匹配的组件都不会缓存；这两个prop的值都可以是一个以英文逗号分隔的字符串。一个正则表达式，或者是包含这两种类型的一个数组。</li>
+<li>3.<code>max prop</code>来限制可被缓存的最大组件实例数。<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>的行为在指定max后类似一个LRU缓存；如果缓存的实例数量即将超过指定的那个最大数量，则最久没有被访问的缓存实例将被销毁，以便为新的实例腾出空间。</li>
+<li>4.当一个组件在<code>&lt;keep-alive&gt;&lt;/keep-alive&gt;</code>中被切换时，它的<code>Actived</code>和<code>deactivated</code>生命周期钩子将被调用，用来替代<code>mounted</code>和<code>unmounted</code>。这适用于直接子节点及其所有子孙节点。</li>
+</ul>
+<h3 id="7vue-router中常用的路由工作模式">7.vue-router中常用的路由工作模式</h3>
+<pre><code class="language-js">const routes = [
+    {
+        path: '/',
+        component: Home
+    },
+    {
+        path: '/about',
+        component: Posts
+    }
+];
+const router = createRouter({
+    history: createWebHashHistory(),
+    routes
+})
+let app = createApp(App);
+app.use(router);
+</code></pre>
+<p><code>vue-router</code>目前支持三种模式，hash模式、HTML5模式和memory模式，我们常用的是前两种模式。</p>
+<ul>
+<li>1.hash模式</li>
+</ul>
+<p>基于<code>location.hash</code>来实现的，<code>location.hash</code>的值就是URL中<code>#</code>后面的内容，不过对SEO有不好的影响。</p>
+<pre><code>1.URL中hash值只是客户端的一种状态，也就是说当向服务器端发出请求时，hash部分不会被发送，改变hash不会重新加载页面。
+2.hash值得改变，都会在浏览器的访问历史中增加一个记录，因此我们能通过浏览器的回退、前进控制hash的切换。
+3.可以使用`hashChange`事件来监听hash值得变化。
+</code></pre>
+<ul>
+<li>2.HTML5模式</li>
+</ul>
+<p>HTML5提供了<code>History API</code> <code>history.pushState()</code>和<code>history.replaceState()</code>，可以在不进行刷新的情况下，操作浏览器的历史记录，需要在服务器上添加一个简单的回退路由，如果URL不匹配任何静态资源，应提供应用程序中的<code>index.html</code>相同的页面。</p>
+<pre><code>1.`history.pushState()`和`history.replaceState()`两个API来操作实现URL的变化；
+2.可以使用`propstate`事件来监听URL的变化，从而对页面进行跳转(渲染);
+3.`history.pushState()`和`history.replaceState()`不会触发`propstate`事件，这时我们需要手动触发页面跳转(渲染)。
+</code></pre>
+<h3 id="8说一说vue的生命周期钩子函数">8.说一说vue的生命周期钩子函数？</h3>
+<pre><code class="language-html">&lt;template&gt;
+    &lt;button id=&quot;count&quot; @click=&quot;count++&quot;&gt;{{count}}&lt;/button&gt;
+&lt;/template&gt;
+&lt;script setup&gt;
+    import {ref,onUpdated} from 'vue';
+    const count=ref(0);
+    onUpdated(()=&gt;{
+        var a=document.getElementById('count').textContent;
+    })
+&lt;/script&gt;
+</code></pre>
+<p>在vue3中，setup函数替代了vue2的beforeCreate和created钩子函数。</p>
+<ul>
+<li><strong>onBeforeMount()</strong> 在组件被挂载之前调用，当这个钩子函数被调用时，组件已经完成了其响应式状态的设置，但还没有创建DOM节点，即将首次执行DOM渲染过程。</li>
+<li><strong>onMounted()</strong> 在组件挂载完成后执行，当调用<code>onMounted</code>时，vue会自动将回调函数注册到当前被初始化的组件实例上，这意味着这些钩子应当在组件初始化时被同步注册，其所有同步子组件都已经被挂载，其自身的DOM树已经创建完成并插入了父容器中，这个钩子通常用于执行需要访问组件所渲染的DOM树相关的副作用，对于嵌套组件，组件在挂载相关的生命周期钩子函数时，先执行父组的<code>beforeMount</code>，然后是子组件的<code>beforeMount</code>，接着是子组件的<code>mounted</code>，最后执行父组件的<code>mounted</code>。</li>
+<li><strong>onBeforeUpdate()</strong> 在组件即将因为响应式状态变更而更新其DOM树之前调用，在<code>beforeUpdate</code>钩子函数执行时，组件的DOM还未更新，如果你想在组件更新前访问DOM，比如手动移除已添加的事件监听器，你可以注册这个钩子函数。</li>
+<li><strong>onUpdated()</strong> 在组件因为响应式状态变更而更新DOM树之后调用，父组件的更新钩子将在其子组件的更新钩子之后调用，如果要监听数据的改变并执行某些逻辑，最好不要使用<code>updated</code>钩子函数，而用计算属性或<code>watcher</code>取代。因为任何数据的变化导致组件更新都会执行<code>updated</code>钩子函数，注意：不要在<code>updated</code>钩子函数中更改数据，因为这样会再次触发组件更新，导致无限递归更新，父组件的更新不一定导致子组件的更新，因为更新粒度是组件级别的。</li>
+<li><strong>onBeforeUnmount()</strong> 在组件实例被卸载之前调用，当这个钩子被调用时，组件实例依然还保有全部功能。</li>
+<li><strong>onUnmounted()</strong> 在组件实例被卸载之后调用，其所有子组件都已经被卸载，可以在这个钩子函数手动清理一些副作用，例如计时器、DOM事件监听器或者与服务器断开连接。</li>
+<li><strong>onErrorCaptured()</strong> 注册一个钩子，在捕获了后代组件传递的错误时调用。</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vue2/3面试题(51-60)]]></title>
+        <id>https://ixoxxoxi.github.io/post/vue2&amp;3-51-60/</id>
+        <link href="https://ixoxxoxi.github.io/post/vue2&amp;3-51-60/">
+        </link>
+        <updated>2022-12-31T10:07:14.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="51-在vue中实现条件渲染渲染有哪些办法">51. 在Vue中实现条件渲染渲染有哪些办法？</h3>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="51-在vue中实现条件渲染渲染有哪些办法">51. 在Vue中实现条件渲染渲染有哪些办法？</h3>
+<!-- more -->
+<pre><code class="language-vue">v-if v-else-if v-else
+v-show
+&lt;component :is=&quot;componentId&quot;&gt;&lt;/component&gt;
+</code></pre>
+<h3 id="52-路由跳转时如何传递数据">52. 路由跳转时如何传递数据？</h3>
+<p>动态路由：</p>
+<ul>
+<li>1）<code>path: /user/:id</code></li>
+<li>2）获取动态路由的值的⽅式如下：</li>
+<li>3）在<code>template</code>中，直接通过 <code>$route.params</code>获取值</li>
+<li>4）在<code>created</code>中，通过 <code>this.$route.params</code>获取值</li>
+<li>5）在<code>setup</code>中，使⽤ <code>vue-router</code> 库提供的⼀个<code>hook</code> <code>useRoute</code>（该Hook会返回⼀个Route对象，对象中保存着当前路由相关的值）</li>
+</ul>
+<p>query参数:</p>
+<ul>
+<li>1）通过<code>query</code>的⽅式来传递参数</li>
+<li>2）在界⾯中通过 <code>$route.query</code> 来获取参数</li>
+<li>3）在<code>created</code>中，通过 <code>this.$route.query</code> 获取值</li>
+<li>4）在<code>setup</code>，使⽤ <code>vue-router</code> 库提供的⼀个<code>hook</code> <code>useRoute</code> 来获取</li>
+</ul>
+<h3 id="53-计算属性有什么作用两大作用">53. 计算属性有什么作用？（两大作用）</h3>
+<blockquote>
+<p>Tips:可以研究一下，计算属性的实现原理。找资料，找视频，回答：我之前看过vue的源码，它的计算属性是xxxx实现的。</p>
+</blockquote>
+<ul>
+<li>
+<p>作用1：当指令的表达式比较复杂时，我们建议使用计算属性来优化，提升视图模板中代码的可阅读性、可维护性。</p>
+</li>
+<li>
+<p>作用2：用于缓存一个复杂的运算，避免组件更新时产生没有必要的性能损耗。计算属性本质上是一个函数，Vue会分析函数体中使用到了哪些声明式变量，有且仅有这些声明式变量发生变化时，计算属性才会重新执行。</p>
+</li>
+</ul>
+<h3 id="54-什么是路由守卫路由守卫有什么作用">54. 什么是路由守卫？路由守卫有什么作⽤？</h3>
+<p><code>vue-router</code> 提供的路由(导航)守卫主要⽤来通过跳转或取消的⽅式守卫导航。有很多种⽅式植⼊路由导航中：全局的，单个路由独享的，或者组件级的。</p>
+<h4 id="全局导航钩子">全局导航钩⼦</h4>
+<ul>
+<li>全局前置守卫</li>
+</ul>
+<pre><code class="language-js">const router = new VueRouter({ ... })
+
+router.beforeEach((to, from, next) =&gt; {
+  // ...
+})
+</code></pre>
+<ul>
+<li>
+<p>全局解析守卫</p>
+<p>在 2.5.0+ 你可以用 <code>router.beforeResolve</code> 注册一个全局守卫。这和 <code>router.beforeEach</code> 类似，区别是在导航被确认之前，同时在所有组件内守卫和异步路由组件被解析之后，解析守卫就被调用。</p>
+</li>
+<li>
+<p>全局后置钩子</p>
+</li>
+</ul>
+<pre><code class="language-js">router.afterEach((to, from) =&gt; {
+  // ...
+})
+</code></pre>
+<ul>
+<li>路由独享的守卫</li>
+</ul>
+<p>在路由配置上直接定义 <code>beforeEnter</code> 守卫</p>
+<pre><code class="language-js">const router = new VueRouter({
+  routes: [
+    {
+      path: '/foo',
+      component: Foo,
+      beforeEnter: (to, from, next) =&gt; {
+        // ...
+      }
+    }
+  ]
+})
+</code></pre>
+<blockquote>
+<p>这些守卫与全局前置守卫的方法参数是一样的</p>
+</blockquote>
+<h4 id="组件内的钩子">组件内的钩⼦</h4>
+<pre><code class="language-js">const Foo = {
+  template: `...`,
+  beforeRouteEnter(to, from, next) {
+    // 在渲染该组件的对应路由被 confirm 前调用
+    // 不！能！获取组件实例 `this`
+    // 因为当守卫执行前，组件实例还没被创建
+  },
+  beforeRouteUpdate(to, from, next) {
+    // 在当前路由改变，但是该组件被复用时调用
+    // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
+    // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+    // 可以访问组件实例 `this`
+  },
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+  }
+}
+</code></pre>
+<p><code>beforeRouteEnter</code> 守卫 不能 访问 <code>this</code>，因为守卫在导航确认前被调用，因此即将登场的新组件还没被创建。</p>
+<p>不过，你可以通过传一个回调给 <code>next</code>来访问组件实例。在导航被确认的时候执行回调，并且把组件实例作为回调方法的参数。</p>
+<pre><code class="language-js">beforeRouteEnter (to, from, next) {
+  next(vm =&gt; {
+    // 通过 `vm` 访问组件实例
+  })
+}
+</code></pre>
+<p>注意 <code>beforeRouteEnter</code> 是支持给 <code>next</code> 传递回调的唯一守卫。对于 <code>beforeRouteUpdate</code> 和 <code>beforeRouteLeave</code> 来说，<code>this</code> 已经可用了，所以不支持传递回调，因为没有必要了。</p>
+<pre><code class="language-js">beforeRouteUpdate (to, from, next) {
+  // just use `this`
+  this.name = to.params.name
+  next()
+}
+</code></pre>
+<p>这个离开守卫通常用来禁止用户在还未保存修改前突然离开。该导航可以通过 <code>next(false)</code> 来取消。</p>
+<pre><code class="language-js">beforeRouteLeave (to, from, next) {
+  const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+  if (answer) {
+    next()
+  } else {
+    next(false)
+  }
+}
+</code></pre>
+<h4 id="单独路由独享组件">单独路由独享组件</h4>
+<pre><code class="language-js">1) beforeEnter: (to, from, next)
+2) afterEach(to,from)
+3)...
+</code></pre>
+<h4 id="路由守卫作用">路由守卫作⽤</h4>
+<ul>
+<li>1)可以在进⼊路由之前进⾏某些判断，⽐如，检查token是否存在来判断⽤户是否已经登录。</li>
+<li>2)可以在路由守卫中进⾏⻚⾯的权限判断，⽐如，判断某个⽤户是否拥有该⻚⾯的权限。</li>
+<li>3)也可以⽤来记录⻚⾯的某些信息，⽐如，记录⻚⾯的滚动信息等等。</li>
+</ul>
+<h4 id="完整的导航解析流程">完整的导航解析流程</h4>
+<ol>
+<li>导航被触发。</li>
+<li>在失活的组件里调用 <code>beforeRouteLeave</code> 守卫。</li>
+<li>调用全局的 <code>beforeEach</code> 守卫。</li>
+<li>在重用的组件里调用 <code>beforeRouteUpdate</code> 守卫 (2.2+)。</li>
+<li>在路由配置里调用 <code>beforeEnter</code>。</li>
+<li>解析异步路由组件。</li>
+<li>在被激活的组件里调用 <code>beforeRouteEnter</code>。</li>
+<li>调用全局的 <code>beforeResolve</code> 守卫 (2.5+)。</li>
+<li>导航被确认。</li>
+<li>调用全局的 <code>afterEach</code> 钩子。</li>
+<li>触发 <code>DOM</code> 更新。<br>
+12 调用 <code>beforeRouteEnter</code> 守卫中传给 <code>next</code> 的回调函数，创建好的组件实例会作为回调函数的参数传入。</li>
+</ol>
+<h3 id="55route和router的区别">55.route和router的区别</h3>
+<p><code>route</code>是路由信息对象，在Vue3中通过 <code>useRoute</code> 来获取。</p>
+<ul>
+<li>1)包括了<code>path</code>，<code>params</code>，<code>hash</code>，<code>query</code>，<code>fullPath</code>，<code>matched</code>，<code>name</code>等路由信息参数。</li>
+</ul>
+<p>router是路由实例”对象，在Vue3中通过 <code>useRouter</code> 来获取。</p>
+<ul>
+<li>1)包括了路由跳转⽅法、钩⼦函数等，⽐如：<code>push</code>、<code>go</code>、<code>back</code>、<code>addRouter</code>、<code>beforeEnter</code>等。</li>
+</ul>
+<h3 id="56vue-中怎么阻止冒泡怎么阻止默认事件怎么监听键盘enter键">56.vue 中怎么阻止冒泡？怎么阻止默认事件？怎么监听键盘enter键？</h3>
+<p>阻止冒泡和默认事件：</p>
+<ul>
+<li>1）通过事件对象</li>
+<li>2）事件事件修饰符</li>
+</ul>
+<p>监听键盘enter键：</p>
+<ul>
+<li>1）通过事件对象</li>
+<li>2）通过按键修改符</li>
+</ul>
+<pre><code class="language-html">&lt;!-- 只有在 `key` 是 `Enter` 时调用 `vm.submit()` --&gt;
+&lt;input v-on:keyup.enter=&quot;submit&quot;&gt;
+</code></pre>
+<p>其他情况(官网示例)：</p>
+<pre><code class="language-html">&lt;!-- 阻止单击事件继续传播 --&gt;
+&lt;a v-on:click.stop=&quot;doThis&quot;&gt;&lt;/a&gt;
+
+&lt;!-- 提交事件不再重载页面 --&gt;
+&lt;form v-on:submit.prevent=&quot;onSubmit&quot;&gt;&lt;/form&gt;
+
+&lt;!-- 修饰符可以串联 --&gt;
+&lt;a v-on:click.stop.prevent=&quot;doThat&quot;&gt;&lt;/a&gt;
+
+&lt;!-- 只有修饰符 --&gt;
+&lt;form v-on:submit.prevent&gt;&lt;/form&gt;
+
+&lt;!-- 添加事件监听器时使用事件捕获模式 --&gt;
+&lt;!-- 即内部元素触发的事件先在此处理，然后才交由内部元素进行处理 --&gt;
+&lt;div v-on:click.capture=&quot;doThis&quot;&gt;...&lt;/div&gt;
+
+&lt;!-- 只当在 event.target 是当前元素自身时触发处理函数 --&gt;
+&lt;!-- 即事件不是从内部元素触发的 --&gt;
+&lt;div v-on:click.self=&quot;doThat&quot;&gt;...&lt;/div&gt;
+
+&lt;!-- 点击事件将只会触发一次 --&gt;
+&lt;a v-on:click.once=&quot;doThis&quot;&gt;&lt;/a&gt;
+
+&lt;!-- 滚动事件的默认行为 (即滚动行为) 将会立即触发 --&gt;
+&lt;!-- 而不会等待 `onScroll` 完成  --&gt;
+&lt;!-- 这其中包含 `event.preventDefault()` 的情况 --&gt;
+&lt;div v-on:scroll.passive=&quot;onScroll&quot;&gt;...&lt;/div&gt;
+
+&lt;!-- 只有在 `key` 是 `Enter` 时调用 `vm.submit()` --&gt;
+&lt;input v-on:keyup.enter=&quot;submit&quot;&gt;
+
+&lt;!-- 你可以直接将 KeyboardEvent.key 暴露的任意有效按键名转换为 kebab-case 来作为修饰符 --&gt;
+&lt;input v-on:keyup.page-down=&quot;onPageDown&quot;&gt;
+
+&lt;!-- .exact 修饰符允许你控制由精确的系统修饰符组合触发的事件 --&gt;
+&lt;!-- 即使 Alt 或 Shift 被一同按下时也会触发 --&gt;
+&lt;button v-on:click.ctrl=&quot;onClick&quot;&gt;A&lt;/button&gt;
+
+&lt;!-- 有且只有 Ctrl 被按下的时候才触发 --&gt;
+&lt;button v-on:click.ctrl.exact=&quot;onCtrlClick&quot;&gt;A&lt;/button&gt;
+
+&lt;!-- 没有任何系统修饰符被按下的时候才触发 --&gt;
+&lt;button v-on:click.exact=&quot;onClick&quot;&gt;A&lt;/button&gt;
+</code></pre>
+<h3 id="57-什么是状态管理什么是单项数据流">57. 什么是状态管理？什么是单项数据流？</h3>
+<p>在开发中，应⽤程序是需要处理各种各样的数据，这些数据需要保存在应⽤程序中的某⼀个位置，对于这些数据的管理就称之为是 状态管理。以前我们是如何管理应⽤程序的状态？</p>
+<ul>
+<li>1）在Vue开发中，我们使⽤组件化的开发⽅式。⽽在组件中我们定义的data或在setup中返回的数据，这些数据我们称之为状态（<code>State</code>）。</li>
+<li>2）在模块template中我们可以使⽤这些数据，模块最终会被渲染成DOM，我们称之为View。</li>
+<li>3）在模块中我们会产⽣⼀些⾏为事件，处理这些⾏为事件时，有可能会修改<code>State</code>，这些⾏为事件我们称之为<code>Actions</code>。</li>
+</ul>
+<p>其实Vue组件内部的数据是以单向数据流的形式来管理数据的。<br>
+例如，组件的数据定义在<code>State</code>中，接着在<code>View</code>层使⽤<code>State</code>中的数据，然后<code>View</code>层会产⽣⼀些事件<code>Actions</code>，⽽这些<code>Actions</code>可能会修改<code>State</code>的数据，这就是⼀个单项数据流的概念。</p>
+<h3 id="58-什么是vuex你使用过-vuex-吗">58. 什么是Vuex？你使⽤过 Vuex 吗？</h3>
+<p><code>vuex</code> 是⼀个专为 <code>Vue.js</code> 应⽤程序开发的状态管理模式。每⼀个 <code>Vuex</code> 应⽤的核⼼就是 <code>store</code>（仓库）。“<code>store</code>” 基本上就是⼀个容器，它包含着你的应⽤中⼤部分的状态 ( <code>state</code> )。</p>
+<ul>
+<li>
+<p>1）<code>Vuex</code> 的状态存储是响应式的。</p>
+<p>当 <code>Vue</code> 组件从 <code>store</code> 中读取状态的时候，若 <code>store</code> 中的状态发⽣变化，那么相应的组件也会相应地得到⾼效更新。</p>
+</li>
+<li>
+<p>2)改变 store 中的状态的唯⼀途径就是显式地提交 (commit) mutation。这样使得我们可以⽅便地跟踪每⼀个状态的变化。</p>
+</li>
+</ul>
+<p>Vuex包括⼀下⼏个核⼼模块：</p>
+<ul>
+<li>1)<code>State</code>：定义了应⽤状态的数据结构，可以在这⾥设置默认的初始状态。</li>
+<li>2)<code>Getter</code>：允许组件从 <code>Store</code> 中获取数据，<code>mapGetters</code> 辅助函数仅仅是将 <code>store</code> 中的 <code>getter</code> 映射到计算属性。</li>
+<li>3)<code>Mutation</code>：是唯⼀更改 <code>store</code> 中状态的⽅法，且必须是同步函数。</li>
+<li>4)<code>Action</code>：⽤于提交 <code>mutation</code>，⽽不是直接变更状态，可以包含任意异步操作。</li>
+<li>5)<code>Module</code>：允许将单⼀的 <code>Store</code> 拆分为多个 <code>store</code> 且同时保存在单⼀的状态树中。</li>
+</ul>
+<h3 id="59v-model-有哪些修饰符">59.v-model 有哪些修饰符？</h3>
+<ul>
+<li><code>.trim</code></li>
+<li><code>.lazy</code></li>
+<li><code>.number</code></li>
+</ul>
+<p><code>v-model</code> 在内部为不同的输入元素使用不同的 <code>property </code>并抛出不同的事件：</p>
+<ul>
+<li><code>text</code> 和 <code>textarea</code> 元素使用 <code>value property</code> 和 <code>input</code> 事件；</li>
+<li><code>checkbox</code> 和 <code>radio</code> 使用 <code>checked property</code> 和<code> change</code> 事件；</li>
+<li><code>select</code> 字段将 <code>value</code> 作为 <code>prop</code> 并将 <code>change</code> 作为事件。</li>
+</ul>
+<h3 id="60-vue中怎么做动画">60. Vue中怎么做动画？</h3>
+<ol>
+<li>内置组件transition，使用那6个类名编写自定义动画</li>
+</ol>
+<ul>
+<li>
+<p><code>enter-class</code></p>
+</li>
+<li>
+<p><code>enter-active-class</code></p>
+</li>
+<li>
+<p><code>enter-to-class</code></p>
+</li>
+<li>
+<p><code>leave-class</code></p>
+</li>
+<li>
+<p><code>leave-active-class</code></p>
+</li>
+<li>
+<p><code>leave-to-class</code></p>
+<ol>
+<li>
+<p><code>v-enter</code>：定义进入过渡的开始状态。在元素被插入之前生效，在元素被插入之后的下一帧移除。</p>
+</li>
+<li>
+<p><code>v-enter-active</code>：定义进入过渡生效时的状态。在整个进入过渡的阶段中应用，在元素被插入之前生效，在过渡/动画完成之后移除。这个类可以被用来定义进入过渡的过程时间，延迟和曲线函数。</p>
+</li>
+<li>
+<p><code>v-enter-to</code>：<strong>2.1.8 版及以上</strong>定义进入过渡的结束状态。在元素被插入之后下一帧生效 (与此同时 <code>v-enter</code> 被移除)，在过渡/动画完成之后移除。</p>
+</li>
+<li>
+<p><code>v-leave</code>：定义离开过渡的开始状态。在离开过渡被触发时立刻生效，下一帧被移除。</p>
+</li>
+<li>
+<p><code>v-leave-active</code>：定义离开过渡生效时的状态。在整个离开过渡的阶段中应用，在离开过渡被触发时立刻生效，在过渡/动画完成之后移除。这个类可以被用来定义离开过渡的过程时间，延迟和曲线函数。</p>
+</li>
+<li>
+<p><code>v-leave-to</code>：<strong>2.1.8 版及以上</strong>定义离开过渡的结束状态。在离开过渡被触发之后下一帧生效 (与此同时 <code>v-leave</code> 被删除)，在过渡/动画完成之后移除。<br>
+<img src="https://v2.cn.vuejs.org/images/transition.png" alt="" loading="lazy"></p>
+</li>
+</ol>
+</li>
+</ul>
+<ol start="2">
+<li>使用animate.css第三方动画</li>
+</ol>
+<p>示例：</p>
+<pre><code class="language-html">&lt;link href=&quot;https://cdn.jsdelivr.net/npm/animate.css@3.5.1&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+
+&lt;div id=&quot;example-3&quot;&gt;
+  &lt;button @click=&quot;show = !show&quot;&gt;
+    Toggle render
+  &lt;/button&gt;
+  &lt;transition
+    name=&quot;custom-classes-transition&quot;
+    enter-active-class=&quot;animated tada&quot;
+    leave-active-class=&quot;animated bounceOutRight&quot;
+  &gt;
+    &lt;p v-if=&quot;show&quot;&gt;hello&lt;/p&gt;
+  &lt;/transition&gt;
+&lt;/div&gt;
+</code></pre>
+<pre><code class="language-js">new Vue({
+  el: '#example-3',
+  data: {
+    show: true
+  }
+})
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vue2/3面试题(41-50)]]></title>
+        <id>https://ixoxxoxi.github.io/post/vue2&amp;3-41-50/</id>
+        <link href="https://ixoxxoxi.github.io/post/vue2&amp;3-41-50/">
+        </link>
+        <updated>2022-12-31T09:11:51.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="41vue-router路由的两种模式">41.vue-router路由的两种模式</h3>
+<p>vue-router中默认使⽤的是hash模式：</p>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="41vue-router路由的两种模式">41.vue-router路由的两种模式</h3>
+<p>vue-router中默认使⽤的是hash模式：</p>
+<!-- more -->
+<ul>
+<li>1）hash模式，带#。如：<code>http://localhost:8080/#/page</code>。改变<code>hash</code>，浏览器本身不会有任何请求服务器动作。</li>
+<li>2）history模式，不带#， 如：<code>http://localhost:8080/page</code> ，路径没有<code>#</code>。基于<code>HTML5</code>的<code>pushState</code>、<code>replaceState</code>实现。</li>
+</ul>
+<p>hash:</p>
+<ul>
+<li>1)有<code>#</code>号</li>
+<li>2)能够兼容到<code>IE8</code></li>
+<li>3)实际的<code>url</code>之前使⽤哈希字符，这部分url不会发送到服务器，不需要在服务器层⾯上进⾏任何处理</li>
+<li>4)刷新不会存在<code>404</code>问题</li>
+<li>5)不需要服务器任何配置</li>
+</ul>
+<p>history:</p>
+<ul>
+<li>1)没有 <code>#</code> 号</li>
+<li>2)只能兼容到<code>IE10</code></li>
+<li>3)每访问⼀个⻚⾯都需要服务器进⾏路由匹配⽣成<code>html</code>⽂件再发送响应给浏览器，消耗服务器⼤量资源</li>
+<li>4)浏览器直接访问嵌套路由时，会报 <code>404</code> 问题。</li>
+<li>5)需要在服务器配置⼀个回调路由</li>
+</ul>
+<h3 id="42-在创建挂载更新销毁阶段vue在背后分别做了些什么事儿">42. 在创建/挂载/更新/销毁阶段，Vue在背后分别做了些什么事儿？</h3>
+<p>Vue的生命周期指的是组件从“生”到“死”的全过程，一共分四个阶段，不同阶段有不同的钩子函数：</p>
+<ul>
+<li>创建阶段：<code>beforeCreate</code>、<code>created</code></li>
+<li>挂载阶段：<code>beforeMount</code>、<code>mounted</code></li>
+<li>更新阶段：<code>beforeUpdate</code>、<code>updated</code></li>
+<li>销毁阶段：<code>beforeDestroy</code>、<code>destroyed</code></li>
+<li>与动态组件有关的两个特殊的钩：<code>activated</code>(激活)、<code>deactivated</code>(休眠)</li>
+<li>与组件异常捕获有关的一个钩子：<code>errorCaptured</code></li>
+</ul>
+<p>在<code>beforeCreate</code>之前会声明<code>methods</code>中的方法和声明生命周期钩子函数，这个钩子函数我们用的并不多</p>
+<p>在<code>created</code>之前会注入一些数据，初始化响应式系统，我们通常在这个钩子函数中调接口，获取路由参数等</p>
+<p>在<code>beforeMount</code>之前会通过<code>el</code> <code>$mount</code> <code>template</code>找模板，会把模块变成<code>render</code>函数  调用<code>render</code>函数创建<code>虚拟DOM</code>，<code>虚拟DOM</code>转化成<code>真实DOM</code>，进行挂载，通常这个钩子函数我们也用不到</p>
+<p>在<code>mounted</code>时，已表示<code>真实DOM</code>已挂载完毕，我们在这个钩子中通常调接口，开定时器，DOM操作，建立websocket连接  实例化echarts实例等。</p>
+<p>当数据变化时，会触发<code>beforeUpdate</code>钩子，这个钩子通常也用不到。</p>
+<p>在<code>updated</code>之前，要生成新的虚拟DOM，新的虚拟DOM和老的虚拟DOM进行对比，会执行<code>patch运算</code>，<code>diff算法</code>，找到两个虚拟DOM的最小差异，找到后，进行异步更新，key的目的就是最快找到最小差异，这个钩子也不常用，但是有点类似于<code>watch侦听器</code>或类似于<code>$nextTick()</code>，我们不能在这个钩子中更新数据，会导致死循环。</p>
+<p>当我们手动调用<code>$destory()</code>或路由切换时，会调用<code>beforeDestroy</code>这个钩子函数，我们可以在这个钩子函数中清空定时器，解除事件绑定，清除缓存...</p>
+<p>当组件销毁时，就会移除当前组件的<code>watcher</code>，DOM就无法再更新，移除所有子组件，移除事件监听器，响应式系统就会失效，组件就死亡了，这个钩子函数我们用的也不多。</p>
+<h3 id="43-响应式原理发生在vue哪些生命周期阶段">43. 响应式原理，发生在Vue哪些生命周期阶段？</h3>
+<p>在<code>created</code>之前会注入一些数据，初始化响应式系统，我们通常在这个钩子函数中调接口，获取路由参数等</p>
+<h3 id="44-虚拟dom在哪些阶段生成的">44. 虚拟DOM，在哪些阶段生成的？</h3>
+<p>在<code>beforeMount</code>之前会通过<code>el</code> <code>$mount</code> <code>template</code>找模板，会把模块变成<code>render函数</code>，调用<code>render函数</code>创建虚拟DOM，虚拟DOM转化成真实DOM，进行挂载，通常这个钩子函数我们也用不到</p>
+<p>在<code>updated</code>之前，要生成新的虚拟DOM，新的虚拟DOM和老的虚拟DOM进行对比，会执行<code>patch运算</code>，<code>diff算法</code>，找到两个虚拟DOM的最小差异，找到后，进行异步更新，<code>key</code>的目的就是最快找到最小差异，这个钩子也不常用，但是有点类似于<code>watch侦听器</code>或类似于<code>$nextTick()</code>，我们不能在这个钩子中更新数据，会导致死循环。</p>
+<h3 id="45-哪些生命周期钩子可以执行多次哪些执行一次">45. 哪些生命周期钩子可以执行多次？哪些执行一次？</h3>
+<p>更新阶段：<code>beforeUpdate</code>、<code>updated </code></p>
+<p>与动态组件有关的两个特殊的钩：<code>activated</code>(激活)、<code>deactivated</code>(休眠)</p>
+<p>上面四个钩子函数执行多次。</p>
+<h3 id="46-什么虚拟dom">46. 什么虚拟DOM？</h3>
+<p>是一个很大的JSON数据，用于描述视图模板的，保存在内存中</p>
+<h3 id="47-谈一谈你对-mvvm-mvc-mvp的理解">47. 谈一谈你对 MVVM、MVC、MVP的理解？</h3>
+<ul>
+<li><code>MVVM</code>流程 : M数据层 -&gt; VM虚拟DOM层 -&gt; V视图层</li>
+<li>网页本质 = M数据层 + V视图结构</li>
+<li><code>M+V</code>是怎么组装的？（ <code>MVC</code>  <code>MVP</code>  <code>MVVM</code>）</li>
+<li><code>M+V</code>在哪儿组装？（前后端分离、前后端不分离、<code>SSR</code>服务端渲染）</li>
+</ul>
+<blockquote>
+<p>进一步理解（阮一峰博客）：<a href="https://www.ruanyifeng.com/blog/2015/02/mvcmvp_mvvm.html">https://www.ruanyifeng.com/blog/2015/02/mvcmvp_mvvm.html</a></p>
+</blockquote>
+<h3 id="48mounted和activated有什么区别deactivated和beforedestroy有什么区别执行次数-使用场景">48.mounted和activated有什么区别？deactivated和beforeDestroy有什么区别？（执行次数、使用场景）</h3>
+<p>这两组钩子的区别和使用场景：</p>
+<ul>
+<li><code>activated</code>(执行多次)</li>
+<li><code>mounted</code>(执行一次)</li>
+<li><code>deactivated</code>(执行多次)</li>
+<li><code>beforeDestroy</code>(执行一次)</li>
+</ul>
+<p>动态组件的作用：</p>
+<ul>
+<li>1）有种<code>v-if</code>的感觉，根据指定条件渲染目标组件，它的<code>is</code>属性等于哪个组件，就显示哪个组件。</li>
+<li>2）场景：它经常配合<code>keep-alive</code>一起使用。</li>
+<li>3）<code>activated</code>(激活)、<code>deactivated</code>(休眠)</li>
+</ul>
+<p>普通组件的挂载与销毁：</p>
+<ul>
+<li>1）<code>mounted</code>挂载</li>
+<li>2）<code>beforeDestroy</code>将要销毁</li>
+</ul>
+<h3 id="49-vue有哪些内置组件">49. Vue有哪些内置组件？</h3>
+<ul>
+<li>component</li>
+<li>transition</li>
+<li>transition-group</li>
+<li>keep-alive</li>
+<li>slot</li>
+</ul>
+<h3 id="50-哪些场景下你会用到动态组件">50. 哪些场景下你会用到动态组件？</h3>
+<p>动态组件也是为了实现条件渲染，在需要使用条件渲染地方，根据不同的组件，渲染不到组件，都可以使用动态组件。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vue2/3面试题(31-40)]]></title>
+        <id>https://ixoxxoxi.github.io/post/vue2&amp;3-31-40/</id>
+        <link href="https://ixoxxoxi.github.io/post/vue2&amp;3-31-40/">
+        </link>
+        <updated>2022-12-31T07:03:57.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="31-你工作中有没有封装比较好的组件">31. 你工作中有没有封装比较好的组件？</h3>
+<p>↑↑↑同第5题↑↑↑</p>
+<blockquote>
+<p>Tips:面试之前，需要封装几个组件，真实开发中，不会自己封装，都是用第三方封装好的，或公司自己的组件库。</p>
+</blockquote>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="31-你工作中有没有封装比较好的组件">31. 你工作中有没有封装比较好的组件？</h3>
+<p>↑↑↑同第5题↑↑↑</p>
+<blockquote>
+<p>Tips:面试之前，需要封装几个组件，真实开发中，不会自己封装，都是用第三方封装好的，或公司自己的组件库。</p>
+</blockquote>
+<!-- more -->
+<h3 id="32-说说vue插槽的作用和平时开发中的应用">32. 说说Vue插槽的作⽤和平时开发中的应⽤？</h3>
+<p>插槽的作⽤:</p>
+<pre><code>1）⽀持在⽗组件⾃定义⼦组件中的个内容
+2）让⼦组件更具有通⽤性，不必限定死某个内容
+</code></pre>
+<p>插槽平时开发中的应⽤:</p>
+<pre><code>1）在封装组件时，如果组件中的某个内容是动态的或不确定的，就可以使⽤插槽来代替了。
+2）在使⽤第三⽅库时，往往会通过使⽤插槽类⾃定义第三⽅组件中的某些内容。
+</code></pre>
+<h3 id="33父子组件的生命周期顺序">33.⽗⼦组件的⽣命周期顺序</h3>
+<p>加载渲染过程： ⽗beforeCreate -&gt; ⽗created -&gt; ⽗beforeMount -&gt; ⼦beforeCreate -&gt; ⼦created -&gt; ⼦beforeMount -&gt;⼦mounted -&gt; ⽗mounted</p>
+<p>⼦组件更新过程：⽗beforeUpdate -&gt; ⼦beforeUpdate -&gt; ⼦updated -&gt; ⽗updated</p>
+<p>⽗组件更新过程：⽗beforeUpdate -&gt; ⽗updated</p>
+<p>销毁过程：⽗beforeDestroy -&gt; ⼦beforeDestroy -&gt; ⼦destroyed -&gt; ⽗destroyed</p>
+<h3 id="34-什么是composition-api-和-options-api">34. 什么是Composition API 和 Options API？</h3>
+<p><code>Composition API</code>是⼀组 API，允许我们使⽤导⼊的函数⽽不是声明选项来编写 Vue 组件。它是⼀个涵盖以下 API 的总称：<code>Reactivity API</code>、<code>Lifecycle Hooks</code>、<code>Dependency Injection</code>等等<br>
+使⽤<code>Composition API</code>编写组件时可以根据逻辑功能来组织代码。⽐如可以把⼀个功能所⽤到的API放在⼀起，这样可以让代码⾼内聚和低耦合，进⽽提⾼了代码的逻辑的复⽤性。在 Vue 3 中，它也主要与<code>script setup</code>语法⼀起使⽤。</p>
+<p><code>Options API</code>是指在对应的属性中编写对应的功能模块, ⽐如<code>data</code>定义数据、<code>methods</code>中定义⽅法、<code>computed</code>中定义计算属性、<code>watch</code>中监听属性改变，也包括⽣命周期钩⼦。<br>
+弊端: 当我们实现某⼀个功能时，这个功能对应的代码逻辑会被拆分到各个属性中,当组件变得复杂，导致对应属性的列表也会增⻓，这可能会导致组件难以阅读和理解</p>
+<h3 id="35-composition-api和之options-api有什么区别">35. <code>Composition API</code>和之<code>Options API</code>有什么区别?</h3>
+<ul>
+<li>1）在逻辑组织和逻辑复⽤⽅⾯，<code>Composition API</code>是优于<code>Options API</code>。</li>
+<li>2）<code>Composition API</code>⼏乎是函数，会有更好的类型推断，对于<code>TS</code>的⽀持更友好。</li>
+<li>3）<code>Composition API</code>对 <code>tree-shaking</code> 友好，代码也更容易压缩。</li>
+<li>4）<code>Composition API</code>中⻅不到<code>this</code>的使⽤，减少了<code>this</code>指向不明的情况。</li>
+<li>5）<code>Composition API</code>⽤起来稍微复杂⼀点，⽽<code>Options API</code>就⾮常简单、易于使⽤。</li>
+</ul>
+<h3 id="36-说说vue3中setup函数的作用">36. 说说Vue3中setup函数的作⽤？</h3>
+<p>在Vue3中， <code>setup()</code>函数充当了组件编写<code>Composition API</code>的⼊⼝点。<code>setup</code>函数参数主要有两个参数：</p>
+<p>1）第⼀个参数：<code>props</code> , ⽗组件传递过来的属性会被放到<code>props</code>对象中</p>
+<p>2）第⼆个参数：<code>context</code>, 它⾥⾯包含三个属性：<br>
+<code>attrs</code>：所有的⾮<code>prop</code>的<code>attribute</code>；<br>
+<code>slots</code>：⽗组件传递过来的插槽；<br>
+<code>emit</code>：当我们组件内部需要发出事件时会⽤到<code>emit</code>（因为我们不能访问<code>this</code>，所以不可以通过<code>this.$emit</code>发出事件）</p>
+<p>作用：</p>
+<ul>
+<li>可以在<code>setup</code>中可以定义响应式数据、⽅法、计算属性、侦听器等等。</li>
+<li>可以通过<code>setup</code>的返回值来替代<code>data</code>选项，让数据可以直接在<code>template</code>中使⽤。</li>
+</ul>
+<h3 id="37ref和reactive有什么区别开发中如何选择">37.ref和reactive有什么区别？开发中如何选择？</h3>
+<ul>
+<li>
+<p>ref和reactive都是响应式的API，都可以⽤来定义响应式的数据。</p>
+</li>
+<li>
+<p>ref可以包裹任意数据类型，reactive只能包裹复杂数据类型，⽐如对象、数组。</p>
+</li>
+<li>
+<p>ref返回⼀个ref对象，在script中取值需要通过value属性，但是在模板中使⽤会进⾏解包不需要调⽤value。<br>
+reactive包裹的是复杂数据类型，直接取⾥⾯的属性即可。</p>
+</li>
+<li>
+<p>ref⼏乎可以应⽤在任何场景，⽽且包含reactive适合的场景;<br>
+reactive的应⽤场景⽐较受限，第⼀：值⽐较固定，第⼆：值与值之间是有联系的。</p>
+</li>
+</ul>
+<blockquote>
+<p>开发中尽量选择ref</p>
+</blockquote>
+<h3 id="38-composition-api常的几个函数与用法">38. Composition API常⻅的⼏个函数与⽤法？</h3>
+<ul>
+<li>
+<p>reactive：包裹复杂类型的值，将包裹的值加⼊响应式</p>
+</li>
+<li>
+<p>computed：把⼀些复杂逻辑⽤computed进⾏包裹，如同Options API中的计算属性⼀样，computed会⾃动收集相关依赖，当依赖发⽣变化时，会⾃动进⾏更新</p>
+</li>
+<li>
+<p>⽣命周期：Vue3中想要在<code>beforeCreate</code>和<code>created</code>中做的事，直接在<code>setup</code>中做即可，Vue3的其他的⽣命周期函数都要在前⾯加⼀个<code>on</code>，然后需要在vue中主动引⼊</p>
+</li>
+<li>
+<p>watch：</p>
+<ul>
+<li>1）<code>watch</code>可以监听单个数据源，也可以监听多个数据源</li>
+<li>2）<code>watch</code>是懒执⾏，第⼀次是不会执⾏的，除⾮你为其提供第三个参数中的<code>immediate</code>属性为<code>true</code></li>
+<li>3）<code>watch</code>只有等到监听的数据源发⽣了变化后，才会执⾏第⼆个参数（回调）</li>
+<li>4）<code>watch</code>可以获取监听数据源的前后变化的值</li>
+<li>5）侦听多个数据源的时候，第⼀个参数是数组类型</li>
+</ul>
+</li>
+<li>
+<p>watchEﬀect：</p>
+<ul>
+<li>1）<code>watchEﬀect</code>会⾃动收集依赖，收集的依赖是第⼀个参数，也就是回调函数中有哪些东⻄是加⼊响应式的</li>
+<li>2）如果这个值加⼊了响应式就会被收集起来，当被收集的值发⽣了变化，就会重新执⾏这个回调函数</li>
+<li>3）<code>watchEﬀect</code>第⼀次执⾏是在DOM挂载前执⾏的，所以如果你想在第⼀次执⾏时拿到DOM元素</li>
+<li>4）需要传⼊第⼆个参数，第⼆个参数是⼀个对象，让其<code>ﬂush</code>属性的值为<code>post</code>即可</li>
+</ul>
+</li>
+<li>
+<p>toRefs：</p>
+<ul>
+<li>1）对<code>reactive</code>进⾏解构后就失去了响应式的效果，因为<code>reactive</code>返回的是⼀个<code>Proxy</code>对象</li>
+<li>2）对<code>Proxy</code>对象进⾏解构，拿到的是纯净的值，所以没有了响应式的效果</li>
+<li>3）如果想要对<code>reactive</code>进⾏解构，需要对其包裹⼀个<code>toRefs</code></li>
+<li>4）这么做相当于为<code>reactive</code>中的每⼀个值包裹了⼀个<code>ref</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="39-vue3中的watch和watcheffect有什么区别">39. Vue3中的watch和watchEﬀect有什么区别？</h3>
+<p><code>watch</code>和<code>watchEﬀect</code>都⽤⽤来侦听响应式数据的变化，<code>watch</code>可以侦听指定的源，默认第⼀次不会执⾏，<code>watchEﬀect</code>虽不能指定侦听的源，但是会⾃动收集依赖，并默认会先执⾏⼀次。</p>
+<ul>
+<li>
+<p>watch：</p>
+<ul>
+<li>1）<code>watch</code>可以监听单个数据源，也可以监听多个数据源</li>
+<li>2）<code>watch</code>是懒执⾏，第⼀次是不会执⾏的，除⾮你为其提供第三个参数中的<code>immediate</code>属性为<code>true</code></li>
+<li>
+<ol start="3">
+<li><code>watch</code>只有等到监听的数据源发⽣了变化后，才会执⾏第⼆个参数（回调）</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li><code>watch</code>可以获取监听数据源的前后变化的值</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>侦听多个数据源的时候，第⼀个参数是数组类型</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>watchEﬀect:</p>
+<ul>
+<li>1)<code>watchEﬀect</code>会⾃动收集依赖，收集的依赖是第⼀个参数，也就是回调函数中有哪些东⻄是加⼊响应式的</li>
+<li>2)如果这个值加⼊了响应式就会被收集起来，当被收集的值发⽣了变化，就会重新执⾏这个回调函数</li>
+<li>3)<code>watchEﬀect</code>第⼀次执⾏是在DOM挂载前执⾏的，所以如果你想在第⼀次执⾏时拿到DOM元素</li>
+<li>4)需要传⼊第⼆个参数，第⼆个参数是⼀个对象，让其<code>ﬂush</code>属性的值为<code>post</code>即可</li>
+</ul>
+</li>
+</ul>
+<h3 id="40-说说vue3中script-setup语法糖常用法">40. 说说Vue3中script setup语法糖常⻅⽤法？</h3>
+<p><code>script setup</code> 是在单⽂件组件中使⽤<code> Composition API</code> 的编译时语法糖，相⽐与之前的<code>setup</code>函数写法，它具有更多的优势：</p>
+<ul>
+<li>1）更少的样板内容，更简洁的代码。</li>
+<li>2）能够使⽤纯 <code>TypeScript</code> 声明 <code>props</code> 和抛出事件。</li>
+<li>3）更好的运⾏时性能 (其模板会被编译成与其同⼀作⽤域的渲染函数，没有任何的中间代理)。</li>
+<li>4）更好的<code>IDE</code>类型推断性能 (减少语⾔服务器从代码中抽离类型的⼯作)。</li>
+</ul>
+<p>script setup：</p>
+<ul>
+<li>1）当使⽤ <code>script setup</code> 的时候，任何在 <code>script setup</code> 声明的顶层绑定都能在模板中直接使⽤</li>
+<li>2）声明的顶层绑定：包括变量，函数声明，以及 <code>import</code> 引⼊的内容</li>
+<li>3）响应式数据需要通过<code>ref</code>、<code>reactive</code>来创建</li>
+<li>4）在<code>script setup</code>中导⼊的组件可以直接使⽤</li>
+</ul>
+<p>deﬁneProps：</p>
+<p>1）在<code>script setup</code>语法糖中必须使⽤ <code>deﬁneProps API</code>来声明<code>props</code>，它具备完整的类型推断并且在<code>&lt;script setup&gt;</code> 中是直接可⽤的（不需要额外导⼊）。</p>
+<p>deﬁneEmits：</p>
+<p>1）在<code>script setup</code>语法糖中必须使⽤ <code>deﬁneEmits API</code>来声明 <code>emits</code>，它具备完整的类型推断并且在<code>&lt;script setup&gt;</code> 中是直接可⽤的（不需要额外导⼊）。</p>
+<p>deﬁneExpose：</p>
+<ul>
+<li>1）获取组件的实例可以通过<code>ref</code>来获取，接着组件挂载完成后可通过<code>value</code>拿到组件实例。</li>
+<li>2）当拿到组件实例后，默认是不可以访问这个实例中的⽅法和属性，因为默认没暴露任何⽅法和属性。</li>
+<li>3）因此在Vue3组件中可以⽤<code>deﬁneExpose API</code>来暴露⽅法和属性给外部访问。</li>
+<li>4）<code>deﬁneExpose</code> 也是不需要导⼊，直接使⽤即可</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vue2/3面试题(21-30)]]></title>
+        <id>https://ixoxxoxi.github.io/post/vue2&amp;3-21-30/</id>
+        <link href="https://ixoxxoxi.github.io/post/vue2&amp;3-21-30/">
+        </link>
+        <updated>2022-12-24T15:03:26.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="21data选项为什么是一个函数而不是对象">21.data选项为什么是⼀个函数⽽不是对象？</h3>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="21data选项为什么是一个函数而不是对象">21.data选项为什么是⼀个函数⽽不是对象？</h3>
+<!-- more -->
+<ul>
+<li>根实例对象 data 可以是对象也可以是函数（根实例是单例），不会产生数据污染情况</li>
+<li>组件实例对象 data 必须为函数，目的是为了防止多个组件实例对象之间共用一个 data，产生数据污染。采用函数的形式，initData 时会将其作为工厂函数都会返回全新 data 对象</li>
+</ul>
+<h3 id="22-vue-data-中某一个属性的值发生改变后视图会立即同步执行-重新渲染吗">22. Vue data 中某⼀个属性的值发⽣改变后，视图会⽴即同步执⾏、重新渲染吗？</h3>
+<p>不会立即同步执行重新渲染。</p>
+<p>Vue实现响应式并不是数据发生变化之后DOM立即变化，而是按一定的策略进行DOM的更新。Vue在更新DOM时是异步执行的。只要侦听到数据变化，Vue将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。</p>
+<p>如果同一个watcher被多次触发，只会被推入到队列中一次。这种在缓冲时去除重复数据对于避免不必要的计算和DOM操作是非常重要的。然后，在下一个的事件循环tick中，Vue刷新队列并执行实际（已去重的）工作。</p>
+<h3 id="23-在-vue-js开发环境下调用api接口如何避免跨域">23. 在 Vue. js开发环境下调⽤API接⼝，如何避免跨域</h3>
+<p>vue2--<code>vue.config.js</code></p>
+<pre><code class="language-js">module.exports = {
+  configureWebpack: {
+    devServer: {
+      proxy: {
+        '/api': {
+          target: '',
+          // 在本地会创建一个虚拟服务端，然后发送请求的数据，并同时接收请求的数据，这样服务端和服务端进行数据的交互就不会有跨域问题
+          changeOrigin: true,
+          ws: true
+          // ,
+          // pathRewrite: {
+          //   '^/api': '/api'
+          //   // 替换target中的请求地址，也就是说以后你在请求http://api.jisuapi.com/XXXXX这个地址的时候直接写成/api即可
+          // }
+        }
+
+      }
+    }
+  }
+}
+</code></pre>
+<p>vue3--<code>vite.config.js</code></p>
+<pre><code class="language-js">export default defineConfig({
+// ...
+  server: {
+    proxy: {
+      &quot;/api&quot;: {
+        target: &quot;&quot;,
+        changeOrigin: true,
+      },
+    },
+  },
+// ...
+})
+</code></pre>
+<h3 id="24v-if和v-for一起使用的弊端及解决办法">24.v-if和v-for⼀起使⽤的弊端及解决办法</h3>
+<p>在vue2中：</p>
+<ul>
+<li>
+<p>当它们处于同一节点，<code>v-for</code> 的优先级比 <code>v-if</code> 更高，这意味着 <code>v-if</code> 将分别重复运行于每个 <code>v-for</code> 循环中。</p>
+</li>
+<li>
+<p>如果你的目的是有条件地跳过循环的执行，那么可以将 v-if 置于外层元素 (或 <code>&lt;template&gt;</code>) 上。</p>
+</li>
+</ul>
+<p>在vue3中：</p>
+<ul>
+<li>它们同时存在于一个节点上时，<code>v-if</code> 比 <code>v-for</code> 的优先级更高。</li>
+<li>在外新包装一层<code>&lt;template&gt;</code>再在其上使用 v-for 可以解决这个问题</li>
+</ul>
+<h3 id="25-谈谈你对-keep-alive-的了解">25. 谈谈你对 keep-alive 的了解？</h3>
+<p><code>&lt;keep-alive&gt;</code> 是一个内置组件，它的功能是在多个组件间动态切换时缓存被移除的组件实例,主要用于保留组件状态或避免重新渲染。</p>
+<p>提供 <code>include</code> 和 <code>exclude</code> 属性，两者都支持字符串或正则表达式， include 表示只有名称匹配的组件会被缓存，<code>exclude</code> 表示任何名称匹配的组件都不会被缓存 ，其中 <code>exclude</code> 的优先级比 <code>include</code> 高；</p>
+<p>对应两个钩子函数 <code>activated</code> 和 <code>deactivated</code> ，当组件被激活时，触发钩子函数 <code>activated</code>，当组件被移除时，触发钩子函数 <code>deactivated</code>。</p>
+<h3 id="26-什么是侦听器有什么用">26. 什么是侦听器？有什么用？</h3>
+<p>Vue提供了一种更通用的方式来观察和响应Vue实列上的数据变动：侦听属性，当属性发生改变时，自动触发属性对应的侦听器。</p>
+<h3 id="27-侦听器能不能监听数组对象的变化">27. 侦听器能不能监听数组/对象的变化？</h3>
+<p>可以，但默认不监听深层,需要配置<code>deep:true</code></p>
+<h3 id="28-如何监听一个对象中的某个属性变化">28. 如何监听一个对象中的某个属性变化？</h3>
+<p>deep:true, 推荐 'obj.key'这种监听写法</p>
+<h3 id="29-侦听器为什么默认不支持深度监听性能优化">29. 侦听器为什么默认不支持深度监听？（性能优化）</h3>
+<p>深度侦听需要遍历被侦听对象中的所有嵌套的属性，当用于大型数据结构时，开销很大。因此只在必要时才使用它，并且要留意性能消耗。</p>
+<h3 id="30-什么是组件化你怎么理解组件化">30. 什么是组件化？你怎么理解组件化？</h3>
+<p>1.组件是独立和可复用的代码组织单元。组件系统是Vue核心特性之一，它使开发者使用小型、独立和通常可复用的组件构建大型应用；</p>
+<p>2.组件化开发能大幅提高应用开发效率、测试性、复用性等；</p>
+<p>3.组件使用按分类有：页面组件、业务组件、通用组件；</p>
+<p>4.vue的组件是基于配置的，我们通常编写的组件是组件配置而非组件，框架后续会生成其构造函数，它们基于VueComponent，扩展于Vue；</p>
+<p>5.vue中常见组件化技术有：属性prop，自定义事件，插槽等，它们主要用于组件通信、扩展等；6合理的划分组件，有助于提升应用性能；</p>
+<p>6.组件应该是高内聚、低耦合的；</p>
+<p>7.遵循单向数据流的原则</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vue2/3面试题(11-20)]]></title>
+        <id>https://ixoxxoxi.github.io/post/vue2&amp;3-11-20/</id>
+        <link href="https://ixoxxoxi.github.io/post/vue2&amp;3-11-20/">
+        </link>
+        <updated>2022-12-24T15:01:26.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="11-谈一谈vue中组件通信">11. 谈一谈Vue中组件通信？</h3>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="11-谈一谈vue中组件通信">11. 谈一谈Vue中组件通信？</h3>
+<!-- more -->
+<pre><code class="language-txt">1)父子组件通信：父传子使用自定义属性（props），子传父使用自定义事件（$emit()）。
+
+2)状态提升：当兄弟组件之间需要共享数据时，我们通常的做法是把这个数据定义它们的共同的父组件中，再通过自定义属性实现数据共享。
+
+3)provide/inject：这是在组件树中，自上而下的一种数据通信方案，也就是说只能父级组件中向后代组件传递。需要注意的是，当provide提供动态数据（声明式变量）时，动态数据发生变化，后代组件们不会自动更新。这是为什么呢？你自己从生命周期流程的角度去思考。
+
+4)ref通信：ref是Vue内置的一个属性，每一个HTML元素或组件都有这个属性；ref作用在HTML元素上得到DOM实例，ref作用在组件上得到组件实例。使用ref访问组件实例，进一步可以访问组件中的数据和方法。（说明：ref是一种快速的DOM的访问方式，当然ref也可作用在组件上得到组件实例。这些ref得到的DOM实例或组件实例，使用this.$refs来访问它们。ref尽量少用，除非某些难搞的需求。）
+
+5)插槽通信：借助&amp;lt;slot&gt;组件实现从子组件向父组件传递数据，借助this.$slots访问父组件中的插槽实例。(在自定义组件中使用this.$slots访问父组件给的插槽实例；在父组件插槽中使用#default='scoped'访问子组件&amp;lt;slot&gt;回传的数据。这种通信在组件库中、工作中，非常常见！)
+
+6)$parent/$children：借助$parent/$children可以实现，在任一组件中访问组件树中的其它任意组件实例，可以做到在组件中随意穿梭。($parent表示的是当前组件的父组件实例，$children表示的是当前组件的子组件们。)
+
+7)$attrs/$listeners：借助$attrs可访问父组件传递过来的自定义属性（除了class和style外），借助$listenrs可以访问父组件给的自定义事件。在某些场景下，$attrs/$listeners可以替代props/$emit()这种通用的通信方案。
+
+8)事件总线：借助于Vue内置的事件系统（$on/$emit/$off/$once）实现“订阅-发布”式的通信，这种通信方式是一种与组件层级无关的“一对多”的通信。（工作中很少用，一些特殊的Vue项目才用得到事件总线。）
+
+9)Vuex通信：这是Vue架构中终极的通信方案，也是Vue架构中用的最多的一种通信方案。
+</code></pre>
+<h3 id="12-vue中逻辑复用技巧有哪些">12. Vue中逻辑复用技巧有哪些？</h3>
+<ul>
+<li>组件：复用UI+逻辑</li>
+<li>混入</li>
+<li>自定义指令</li>
+<li>渲染函数&amp;JSX</li>
+<li>插件</li>
+<li>过滤器</li>
+<li>V3中的自定义hook</li>
+</ul>
+<h3 id="13-你项目的鉴权怎么做的你这个管理系统的权限怎么设计的">13. 你项目的鉴权怎么做的？你这个管理系统的权限怎么设计的？</h3>
+<p>我们之前的公司中小公司，做的项目，大概有30个左右的模块，所以权限这一块，就前端去处理的。我们处理的流程大致是这样的：</p>
+<p>前端登录换取token，在导航守卫中，实现权限设计，首先判断有没有token，没有token，直接跳到登录页面。有token会进一步判断vuex中有没有用户信息。如果没有用户信息，拿着token，调用接口获取用户信息，用户信息中保存了最重要的字段，就是角色，有了角色后，通过算法生成当前用户可访问的动态路由规则（算法大至是使用后端返回的角色和路由元信息中的角色进行对比，得到可以访问的动态路由规则），有了动态访问的路由规则，再通过addRoutes方法，把得到的动态访问的路由规则添加到路由系统。</p>
+<h3 id="14-简述vuex的工作流程">14. 简述Vuex的工作流程？</h3>
+<p>背官方的图<br>
+<img src="https://vuex.vuejs.org/vuex.png" alt="" loading="lazy"></p>
+<p>5大概念，4个map，3个原则。</p>
+<p>5大概念：</p>
+<p>创建store时要用的五个概念（state/getters/mutations/actions/modules）</p>
+<ul>
+<li>state: {} 用于定义可被组件共享数据，是具有响应式的；在组件中使用this.$store.state来访问它们。</li>
+<li>getters: {fn} 用于计算state，相当于Vue的计算属性，当state发生变化时getters方法自动自动重新计算；在组件中使用this.$store.getters来访问它们。</li>
+<li>mutations: {fn} 专门用于修改state的，所以mutations方法是这样fn(state,payload)定义的；mutations方法在actions中或组件中使用，使用$store.commit('mutations方法',payload)</li>
+<li>actions: {fn} 专门用于调接口的，所以actions方法是这样fn(store,payload)定义的；在组件中使用this.$store.dispatch('actions方法', payload)。</li>
+<li>modules: {子store} 是一个Vuex架构层面的概念，用于拆分子store。大家在拆分子store务必在子store中使用namespaced:true开启命名空间。</li>
+</ul>
+<p>4个map:<br>
+mapState/mapGetters，必须写在computed计算属性中，用于访问state/getters数据。映射进来后，就可以用this来访问这些数据了。<br>
+mapActions/mapMutations 必须写在methods选项中，用于访问mutations/actions方法。映射进来后，可以用this调用这些方法。<br>
+它们的语法是相同的：map*('命名空间', ['k1', 'k2'])</p>
+<p>3个原则：<br>
+原则1：只要使用Vuex一定要拆分store，拆分store后在根store上不要再使用state/mutations/actions。<br>
+原则2：在子store务必开启命名空间namespaced:true。<br>
+原则3：在组件中尽可能不要使用$store，建议使用四个map*方法。</p>
+<h3 id="15-说说你对-spa-单面的理解它的优缺点分别是什么">15. 说说你对 SPA 单⻚⾯的理解，它的优缺点分别是什么？</h3>
+<p>SPA就是只有一张Web页面的应用，是加载单个HTML 页面并在用户与应用程序交互时动态更新该页面的Web应用程序。<br>
+浏览器一开始会加载必需的HTML、CSS和JavaScript，所有的操作都在这张页面上完成，都由JavaScript来控制。因此，对单页应用来说模块化的开发和设计显得相当重要。</p>
+<p>优点：</p>
+<p>用户体验好、快，内容的改变不需要重新加载整个页面，避免了不必要的跳转和重复渲染；<br>
+基于上面这一点，SPA相对对服务器压力小；<br>
+前后端职责分离，结构清晰，前端进行交互逻辑，后端进行数据处理；</p>
+<p>缺点：</p>
+<p>初次加载时耗时多：为实现单页web应用功能及显示效果，需要在加载页面的时候将js,css统一加载，部分按需加载；<br>
+前进后退路由管理：由于单页应用在一个页面中显示所有的内容，所以不能使用浏览器的前进后退功能，所有的页面切换需要自己建立堆栈管理；<br>
+SEO难度较大：由于所有的内容都在一个页面中动态替换显示，所以在SEO上其有着天然的弱势。</p>
+<h3 id="16v-show-与-v-if-有什么区别">16.v-show 与 v-if 有什么区别？</h3>
+<ol>
+<li>手段：v-if是通过控制dom节点的存在与否来控制元素的显隐；v-show是通过设置DOM元素的display样式，block为显示，none为隐藏；</li>
+<li>编译过程：v-if切换有一个局部编译/卸载的过程，切换过程中合适地销毁和重建内部的事件监听和子组件；v-show只是简单的基于css切换；</li>
+<li>编译条件：v-if是惰性的，如果初始条件为假，则什么也不做；只有在条件第一次变为真时才开始局部编译（编译被缓存？编译被缓存后，然后再切换的时候进行局部卸载); v-show是在任何条件下（首次条件是否为真）都被编译，然后被缓存，而且DOM元素保留；</li>
+<li>性能消耗：v-if有更高的切换消耗；v-show有更高的初始渲染消耗</li>
+</ol>
+<h3 id="17-数组中的哪些方法会触发视图的更新">17. 数组中的哪些⽅法会触发视图的更新？</h3>
+<ul>
+<li>push()</li>
+<li>pop()</li>
+<li>shift()</li>
+<li>unshift()</li>
+<li>splice()</li>
+<li>sort()</li>
+<li>reverse()</li>
+</ul>
+<h3 id="18-vue中v-for的key-有什么作用">18. Vue中v-for的key 有什么作⽤？</h3>
+<p><code>key</code>是特殊的<code>attribute</code>,主要用在 <code>Vue</code> 的虚拟 <code>DOM</code> 算法，在新旧 <code>nodes</code> 对比时辨识 VNodes。如果不使用 <code>key</code>，<code>Vue</code> 会使用一种最大限度减少动态元素并且尽可能的尝试就地修改/复用相同类型元素的算法。而使用 <code>key</code> 时，它会基于 <code>key</code> 的变化重新排列元素顺序，并且会移除 <code>key</code> 不存在的元素。</p>
+<h3 id="19computed和method有什么区别">19.computed和method有什么区别？</h3>
+<ul>
+<li>调用方式不同。computed 直接以对象属性方式调用，不需要加括号，而 methods 必须要函数执行才可以得到结果。</li>
+<li>绑定方式不同。methods 与 compute 纯 get 方式都是单向绑定，不可以更改输入框中的值。compute 的 get 与 set 方式是真正的双向绑定。</li>
+<li>是否存在缓存。methods 没有缓存，调用相同的值计算还是会重新计算。competed 有缓存，在值不变的情况下不会再次计算，而是直接使用缓存中的值。</li>
+</ul>
+<h3 id="20-什么是双向绑定v-model的本质是什么">20. 什么是双向绑定？v-model的本质是什么？</h3>
+<p>从界面的操作能实时反映到数据，数据的变更能实时展现到界面，即是数据的双向绑定。</p>
+<p>v-model的本质是语法糖，如对于input框来说可看作v-bind:value和v-on:input的语法糖。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Vue2/3面试题(1-10)]]></title>
+        <id>https://ixoxxoxi.github.io/post/vue2&amp;3-1-10/</id>
+        <link href="https://ixoxxoxi.github.io/post/vue2&amp;3-1-10/">
+        </link>
+        <updated>2022-12-24T12:57:36.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="1-你怎么理解指令工作中你封装过自定义指令吗举一些例子">1. 你怎么理解指令？工作中你封装过自定义指令吗？举一些例子</h3>
+<p>指令本质上是对dom的操作，vue封装这些指令就是为了我们更为合理符合规范的操作dom，避免DOM滥操作。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="1-你怎么理解指令工作中你封装过自定义指令吗举一些例子">1. 你怎么理解指令？工作中你封装过自定义指令吗？举一些例子</h3>
+<p>指令本质上是对dom的操作，vue封装这些指令就是为了我们更为合理符合规范的操作dom，避免DOM滥操作。</p>
+<!-- more -->
+<ul>
+<li>v-permission指令</li>
+</ul>
+<p>有权限则显示按钮等模块，没有权限则不显示</p>
+<pre><code class="language-html">    &lt;div id=&quot;app&quot;&gt;
+        &lt;button v-permission=&quot;'admin'&quot;&gt;管理员-按钮&lt;/button&gt;
+        &lt;button v-permission=&quot;'editor'&quot;&gt;作者-按钮&lt;/button&gt;
+        &lt;!-- 游客按钮不显示 --&gt;
+        &lt;button v-permission=&quot;'guest'&quot;&gt;游客-按钮&lt;/button&gt;
+        &lt;button v-permission=&quot;user.role&quot;&gt;user-按钮&lt;/button&gt;
+    &lt;/div&gt;
+</code></pre>
+<pre><code class="language-js">        function checkArray(role) {
+            let arr = ['admin', 'editor'];
+            let index = arr.indexOf(role);
+            return index &gt; -1 ? true : false;
+        }
+        Vue.directive('permission', {
+            inserted: function (el, binding) {
+                if (!(binding.value &amp;&amp; checkArray(binding.value))) {
+                    console.log(binding.value + '用户组没有权限使用该功能');
+                    el.parentNode &amp;&amp; el.parentNode.removeChild(el)
+                }
+            }
+        })
+
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    user: { id: '001', name: 'wangcai', age: 18, role: 'admin' }
+                }
+            },
+            methods: {
+
+            }
+        })
+</code></pre>
+<ul>
+<li>v-draggable 拖拽指令</li>
+</ul>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+    &lt;style&gt;
+        #app {
+            width: 100%;
+            height: 500px;
+            outline: 1px solid blue;
+            position: relative;
+        }
+
+        .drag {
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            position: absolute;
+        }
+    &lt;/style&gt;
+    &lt;script src=&quot;./lib/vue@2.7.10.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;app&quot;&gt;
+        &lt;div class=&quot;drag&quot; v-draggable&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;script&gt;
+        Vue.directive('draggable', {
+            inserted: function (el) {
+                el.style.cursor = 'move';
+                el.onmousedown = function (e) {
+                    let disx = e.pageX - el.offsetLeft;
+                    let disy = e.pageY - el.offsetTop;
+
+                    document.onmousemove = function (e) {
+                        let x = e.pageX - disx;
+                        let y = e.pageY - disy;
+                        let maxX = document.body.clientWidth - parseInt(window.getComputedStyle(el).width);
+                        let maxY = document.body.clientHeight - parseInt(window.getComputedStyle(el).height);
+
+                        if (x &lt; 0) {
+                            x = 0
+                        } else if (x &gt; maxX) {
+                            x = maxX
+                        }
+
+                        if (y &lt; 0) {
+                            y = 0
+                        } else if (y &gt; maxY) {
+                            y = maxY
+                        }
+                        el.style.left = x + 'px';
+                        el.style.top = y + 'px';
+                    }
+                    document.onmouseup = function () {
+                        document.onmousemove = document.onmouseup = null
+                    }
+                }
+            }
+        })
+
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                }
+            },
+            methods: {
+
+            }
+        })
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="2-计算属性能不能绑定在v-model上">2. 计算属性能不能绑定在v-model上？</h3>
+<p>计算属性可以有setter，所以可以使用在v-model上面。</p>
+<h3 id="3-侦听器能监听哪些变量变化">3. 侦听器能监听哪些变量变化？</h3>
+<p>能够监听data、计算属性、vuex数据、$route等，凡是那些带有__ob__变量都能被监听到。</p>
+<h3 id="4-说一下vue的响应式原理你是如何理解mvvm的">4. 说一下Vue的响应式原理？(你是如何理解MVVM的)</h3>
+<p>回答版本一：<br>
+当vue组件被创建时，在生命周期的第一阶段，Vue使用Object.defineProperty()对data选项进行遍历劫持并添加get/set钩子；在生命周期第二阶段，指令第一次与声明式变量touch时，发生依赖收集，再调用当前组件的watcher第一次更新DOM，DOM视图就显示出来了。当声明式变量发生变化时，vue再次通知Watcher更新视图，这就是响应式（原理）</p>
+<p>回答版本二：<br>
+当new Vue时，Vue源码中有一个Observer，会对data中所有的数据进行劫持，把data中的数据处理成响应式，每处理一个响应式数据，都有一个Dep与之对应。同时编译模板，编译模板时会找到小胡子语法和指令，处理小胡子语法和指令时，会创建出一个个的Watcher，这些Watcher会存储到对应的Dep中，这个过程叫依赖收集，同时调用对应的Updater，完成对应的页面的初始化。当数据发生变化时，在Observer的setter中会监听到，数据变化，就通知Dep中的Watcher更新视图，每个Watcher都绑定了更新视图的回调函数。</p>
+<h3 id="5-你工作中有没有封装比较好的组件">5. 你工作中有没有封装比较好的组件？</h3>
+<p>一个样式丰富的button组件</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+    &lt;style&gt;
+        .mybtn {
+            display: inline-block;
+            line-height: 1;
+            white-space: nowrap;
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #dcdfe6;
+            color: #606266;
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+            margin: 0;
+            transition: .1s;
+            font-weight: 500;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .primary {
+            color: #fff;
+            background-color: #409eff;
+            border-color: #409eff;
+        }
+
+        .success {
+            color: #fff;
+            background-color: #67c23a;
+            border-color: #67c23a;
+        }
+
+        .info {
+            color: #fff;
+            background-color: #909399;
+            border-color: #909399;
+        }
+
+        .warning {
+            color: #fff;
+            background-color: #e6a23c;
+            border-color: #e6a23c;
+        }
+
+        .danger {
+            color: #fff;
+            background-color: #f56c6c;
+            border-color: #f56c6c;
+        }
+
+        .is-round {
+            border-radius: 20px;
+            padding: 12px 23px;
+        }
+
+        .is-plain {
+            color: #409eff;
+            background: #ecf5ff;
+            border-color: #b3d8ff;
+        }
+    &lt;/style&gt;
+    &lt;script src=&quot;./lib/vue@2.7.10.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;app&quot;&gt;
+        &lt;mybtn text=&quot;默认按钮&quot; type=&quot;default&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;主要按钮&quot; type=&quot;primary&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;成功按钮&quot; type=&quot;success&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;信息按钮&quot; type=&quot;info&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;警告按钮&quot; type=&quot;warning&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;危险按钮&quot; type=&quot;danger&quot;&gt;&lt;/mybtn&gt;
+        &lt;hr&gt;
+        &lt;mybtn text=&quot;朴素按钮&quot; plain type=&quot;default&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;主要按钮&quot; plain type=&quot;primary&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;成功按钮&quot; plain type=&quot;success&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;信息按钮&quot; plain type=&quot;info&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;警告按钮&quot; plain type=&quot;warning&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;危险按钮&quot; plain type=&quot;danger&quot;&gt;&lt;/mybtn&gt;
+        &lt;hr&gt;
+        &lt;mybtn text=&quot;圆角按钮&quot; round type=&quot;default&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;主要按钮&quot; round type=&quot;primary&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;成功按钮&quot; round type=&quot;success&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;信息按钮&quot; round type=&quot;info&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;警告按钮&quot; round type=&quot;warning&quot;&gt;&lt;/mybtn&gt;
+        &lt;mybtn text=&quot;危险按钮&quot; round type=&quot;danger&quot;&gt;&lt;/mybtn&gt;
+
+    &lt;/div&gt;
+
+    &lt;script id=&quot;mybutton&quot; type=&quot;x-template&quot;&gt;
+        &lt;button v-text=&quot;text&quot; class=&quot;mybtn&quot; :class=&quot;[btnColor,isPlain,isRound]&quot;&gt;&lt;/button&gt;
+    &lt;/script&gt;
+    &lt;script&gt;
+        Vue.component(&quot;mybtn&quot;, {
+            template: &quot;#mybutton&quot;,
+            props: {
+                text: {
+                    type: String, default: '默认内容'
+                },
+                type: {
+                    type: String, default: 'primary'
+                },
+                round: {
+                    type: Boolean, default: false
+                },
+                plain: {
+                    type: Boolean, default: false
+                }
+            },
+            computed: {
+                btnColor() {
+                    switch (this.type) {
+                        case 'primary':
+                            return 'primary'
+                            break;
+                        case 'success':
+                            return 'success'
+                            break;
+                        case 'info':
+                            return 'info'
+                            break;
+                        case 'warning':
+                            return 'warning'
+                            break;
+                        case 'danger':
+                            return 'danger'
+                            break;
+                        default:
+                            return ''
+                    }
+                },
+                isRound() {
+                    return this.round ? 'is-round' : ''
+                },
+                isPlain() {
+                    return this.plain ? 'is-plain' : ''
+                }
+            }
+        });
+
+        let vm = new Vue({
+            el: &quot;#app&quot;,
+            data() {
+                return {};
+            },
+            methods: {},
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="6-说一下vue的生命周期展开说不仅仅是那几个钩子">6. 说一下Vue的生命周期（展开说，不仅仅是那几个钩子）？</h3>
+<p>Vue的生命周期指的是组件从“生”到“死”的全过程，一共分四个阶段，不同阶段有不同的钩子函数：</p>
+<ul>
+<li>创建阶段：beforeCreate、created</li>
+<li>挂载阶段：beforeMount、mounted</li>
+<li>更新阶段：beforeUpdate、updated</li>
+<li>销毁阶段：beforeDestroy、destroyed</li>
+<li>与动态组件有关的两个特殊的钩：activated(激活)、deactivated(休眠)</li>
+<li>与组件异常捕获有关的一个钩子：errorCaptured</li>
+</ul>
+<p>在beforeCreate之前会声明methods中的方法和声明生命周期钩子函数，这个钩子函数我们用的并不多</p>
+<p>在created之前会注入一些数据，初始化响应式系统，我们通常在这个钩子函数中调接口，获取路由参数等</p>
+<p>在beforeMount之前会通过el $meount template找模板，会把模块变成render函数  调用render函数创建虚拟DOM，虚拟DOM转化成真实DOM，进行挂载，通常这个钩子函数我们也用不到</p>
+<p>在mounted时，已表示真实DOM已挂载完毕，我们在这个钩子中通常调接口，开定时器，DOM操作，建立websocket连接  实例化echarts实例等。</p>
+<p>当数据变化时，会触发beforeUpdate钩子，这个钩子通常也用不到。</p>
+<p>在updated之前，要生成新的虚拟DOM，新的虚拟DOM和老的虚拟DOM进行对比，会执行patch运算，diff算法，找到两个虚拟DOM的最小差异，找到后，进行异步更新，key的目的就是最快找到最小差异，这个钩子也不常用，但是有点类似于watch侦听器或类似于$nextTick()，我们不能在这个钩子中更新数据，会导致死循环。</p>
+<p>当我们手动调用$destory()或路由切换时，会调用beforeDestroy这个钩子函数，我们可以在这个钩子函数中清空定时器，解除事件绑定，清除缓存...</p>
+<p>当组件销毁时，就会移除当前组件的watcher，DOM就无法再更新，移除所有子组件，移除事件监听器，响应式系统就会失效，组件就死亡了，这个钩子函数我们用的也不多。</p>
+<h3 id="7-虚拟dom存在的价值点在哪里">7. 虚拟DOM存在的价值点在哪里？</h3>
+<p>把DOM更新粒度降到最低，规避人为DOM滥操作，提升性能。配合DIFF算法，可以让页面性能有质的提升。</p>
+<h3 id="8-vue有哪些内置组件vue中实现条件渲染渲染有哪些办法">8. Vue有哪些内置组件？Vue中实现条件渲染渲染有哪些办法？</h3>
+<p>五个内置组件(slot,transition,component,keep-alive)</p>
+<p>条件渲染: v-if v-show 动态组件</p>
+<h3 id="9-你有封装过vue插件怎么封装的封装过什么">9. 你有封装过Vue插件？怎么封装的？封装过什么？</h3>
+<p>在Vue生态中，除了Vue本身，其它所有与Vue相关的第三方包，都是插件，都得以插件的方式进行集成。<br>
+作用：是一种更加高级的代码复用技术，可以以插件的方式为我们提供可复用的组件、混入、指令、过滤器、原型链API。</p>
+<p>两种写法：</p>
+<ul>
+<li>第一种写法： const Plugin = { install (Vue) { } }</li>
+<li>第二种写法： const Plugin = function (Vue) {}</li>
+</ul>
+<p>在项目中我之前二次封装axios，把它封装成一个插件，参考：<br>
+<a href="https://juejin.cn/post/6844903599764406280">https://juejin.cn/post/6844903599764406280</a></p>
+<p>封装右键菜单插件：<br>
+<a href="https://juejin.cn/post/6906788973981466637">https://juejin.cn/post/6906788973981466637</a></p>
+<h3 id="10-谈一谈你对-vuenexttick-的理解有什么用">10. 谈一谈你对 Vue.nextTick() 的理解？有什么用？</h3>
+<p>数据变化，进行set操作，代码确实是同步的，但是set行为是异步的；set操作修改声明变量，触发re-render生成新的虚拟DOM，进一步执行diff运算，找到脏节点集合，交给Vue背后的更新队列去执行循环更新。在更新队列中每一个更新任务都是一个更新单元，nextTick表示下一个更新单元（更新周期）。</p>
+<p>我们set操作data（更新DOM），你希望访问这个DOM的最新状态时，使用this.$nextTick(handler)。</p>
+]]></content>
+    </entry>
+</feed>
